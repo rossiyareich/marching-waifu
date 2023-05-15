@@ -1,122 +1,47 @@
 {
-    "fg_preliminary": {
-        "models": {
-            "ldm_repo_id": "rossiyareich/Nabylon-v1.0-fp16",
-            "vae_repo_id": "stabilityai/sd-vae-ft-mse"
-        },
-        "params": {
-            "prompt": "(masterpiece, best quality, grey background, {0})+, 1girl, white hoodie, earmuffs, leggings, white scarf, black gloves, white socks, short blue hair, blue eyes, bangs",
-            "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
-            "steps": 20,
-            "cfg_scale": 10,
-            "seed": 13382126972200556239
-        },
-        "controlnet": {
-            "soft_exp": 0.825,
-            "unit_scales": {
-                "openpose": 1.0,
-                "depth": 0.8,
-                "normals": 0.8,
-                "lineart": 0.6
-            }
-        },
-        "generation": {
-            "ops": [
-                "xformers",
-                "cuda"
-            ],
-            "overview": true
+    "models": {
+        "ldm_repo_id": "rossiyareich/Nabylon-v1.0-fp16",
+        "ldm_inpaint_repo_id": "rossiyareich/Nabylon-v1.0-fp16-inpainting",
+        "vae_repo_id": "stabilityai/sd-vae-ft-mse"
+    },
+    "controlnet": {
+        "soft_exp": 0.825,
+        "unit_scales": {
+            "openpose": 1.0,
+            "depth": 0.8,
+            "normals": 0.8,
+            "lineart": 0.6
         }
+    },
+    "generation": {
+        "ops": [
+            "xformers",
+            "cuda"
+        ],
+        "overview": true
     },
     "deepdanbooru": {
-        "threshold": 0.08
+        "threshold": 0.08,
+        "multiplier": 1.1
     },
-    "fg": {
-        "models": {
-            "ldm_repo_id": "rossiyareich/Nabylon-v1.0-fp16-inpainting",
-            "vae_repo_id": "stabilityai/sd-vae-ft-mse"
-        },
-        "params": {
-            "deepdanbooru_multiplier": 1.1,
-            "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
-            "steps": 20,
-            "cfg_scale": 10,
-            "seed": -1
-        },
-        "controlnet": {
-            "soft_exp": 0.825,
-            "unit_scales": {
-                "openpose": 1.0,
-                "depth": 0.8,
-                "normals": 0.8,
-                "lineart": 0.6
+    "pipeline": {
+        "firstgen": {
+            "params": {
+                "prompt": "(masterpiece, best quality, grey background, {0})+, 1girl, white hoodie, earmuffs, leggings, white scarf, black gloves, white socks, short blue hair, blue eyes, bangs",
+                "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
+                "steps": 20,
+                "cfg_scale": 10,
+                "seed": 13382126972200556239
             }
         },
-        "generation": {
-            "ops": [
-                "xformers",
-                "cuda"
-            ],
-            "overview": true
-        }
-    },
-    "sg": {
-        "models": {
-            "ldm_repo_id": "rossiyareich/Nabylon-v1.0-fp16-inpainting",
-            "vae_repo_id": "stabilityai/sd-vae-ft-mse"
-        },
-        "params": {
-            "deepdanbooru_multiplier": 1.1,
-            "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
-            "steps": 20,
-            "cfg_scale": 10,
-            "seed": -1
-        },
-        "controlnet": {
-            "soft_exp": 0.825,
-            "unit_scales": {
-                "openpose": 1.0,
-                "depth": 0.8,
-                "normals": 0.8,
-                "lineart": 0.6
+        "restgen": {
+            "params": {
+                "dataset_size": 40,
+                "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
+                "steps": 20,
+                "cfg_scale": 10,
+                "seed": -1
             }
-        },
-        "generation": {
-            "ops": [
-                "xformers",
-                "cuda"
-            ],
-            "overview": true
-        }
-    },
-    "rg": {
-        "models": {
-            "ldm_repo_id": "rossiyareich/Nabylon-v1.0-fp16-inpainting",
-            "vae_repo_id": "stabilityai/sd-vae-ft-mse"
-        },
-        "params": {
-            "deepdanbooru_multiplier": 1.1,
-            "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
-            "steps": 20,
-            "cfg_scale": 10,
-            "seed": -1
-        },
-        "controlnet": {
-            "soft_exp": 0.825,
-            "unit_scales": {
-                "openpose": 1.0,
-                "depth": 0.8,
-                "normals": 0.8,
-                "lineart": 0.6
-            }
-        },
-        "generation": {
-            "ops": [
-                "xformers",
-                "cuda"
-            ],
-            "overview": false,
-            "dataset_size": 40
         }
     }
 }
