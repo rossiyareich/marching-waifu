@@ -1,0 +1,17 @@
+torch 
+torchvision 
+torchaudio 
+--extra-index-url https://download.pytorch.org/whl/cu118
+
+tensorflow
+
+accelerate 
+diffusers
+transformers 
+xformers 
+safetensors 
+opencv-contrib-python 
+controlnet_aux 
+huggingface_hub 
+omegaconf 
+compel

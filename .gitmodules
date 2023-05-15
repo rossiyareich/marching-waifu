@@ -1,0 +1,3 @@
+[submodule "ext/AnimeFaceNotebooks"]
+	path = ext/AnimeFaceNotebooks
+	url = https://github.com/halcy/AnimeFaceNotebooks.git
