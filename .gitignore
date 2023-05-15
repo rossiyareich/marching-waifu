@@ -4,4 +4,4 @@ data/models/Nabylon-v1.0-fp16.safetensors
 data/models/Nabylon-v1.0-fp16-inpainting.safetensors
 data/multi_controlnet/multi_controlnet_raw
 data/multi_controlnet/dataset.zip
-ext/DeepDanbooru
+ext/weights
