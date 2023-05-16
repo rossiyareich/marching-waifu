@@ -1,24 +1,13 @@
 import os
 
-import cv2
-import numpy as np
-import PIL.Image
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
 from realesrgan import RealESRGANer
 
-
-def pil_to_cv2(img):
-    img = np.array(img)
-    return cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+from ..utils.image import *
 
 
-def cv2_to_pil(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    return PIL.Image.fromarray(img)
-
-
-class real_esrgan:
+class real_esrgan_workflow:
     def __init__(
         self,
         outscale=4.0,
@@ -32,7 +21,8 @@ class real_esrgan:
         self.outscale = outscale
 
         # determine models according to model names
-        model_name = "RealESRGAN_x4plus_anime_6B"  # x4 RRDBNet model with 6 blocks
+        # x4 RRDBNet model with 6 blocks
+        model_name = "RealESRGAN_x4plus_anime_6B"
         model = RRDBNet(
             num_in_ch=3, num_out_ch=3, num_feat=64, num_block=6, num_grow_ch=32, scale=4
         )
@@ -63,12 +53,13 @@ class real_esrgan:
             tile=tile,
             tile_pad=tile_pad,
             pre_pad=pre_pad,
-            half=not fp32,
+            half=(not fp32),
             gpu_id=gpu_id,
         )
 
         self.face_enhancer = None
-        if face_enhance:  # Use GFPGAN for face enhancement
+        # Use GFPGAN for face enhancement
+        if face_enhance:
             from gfpgan import GFPGANer
 
             self.face_enhancer = GFPGANer(
@@ -79,15 +70,19 @@ class real_esrgan:
                 bg_upsampler=self.upsampler,
             )
 
-    def __call__(self, img):
-        img = pil_to_cv2(img)
+    def __call__(self, source_img):
+        source_img = image(source_img)
+
         try:
             if self.face_enhancer is not None:
                 _, _, output = self.face_enhancer.enhance(
-                    img, has_aligned=False, only_center_face=False, paste_back=True
+                    source_img,
+                    has_aligned=False,
+                    only_center_face=False,
+                    paste_back=True,
                 )
             else:
-                output, _ = self.upsampler.enhance(img, outscale=self.outscale)
+                output, _ = self.upsampler.enhance(source_img, outscale=self.outscale)
         except RuntimeError as error:
             print("Error", error)
             print(
@@ -95,4 +90,4 @@ class real_esrgan:
             )
         else:
             extension = extension[1:]
-            return cv2_to_pil(output)
+            return image(output).to_pil()
