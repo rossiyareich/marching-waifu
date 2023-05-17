@@ -28,7 +28,7 @@ def load_controlnet_conditions(folderpath):
         "normals",
         "lineart",
     ]
-    controlnet_conditions = [None] * 4
+    controlnet_conditions = [[] for i in range(4)]
 
     for i, prefix in enumerate(prefixes):
         for filepath in glob.iglob(os.path.join(folderpath, f"{prefix}*")):
