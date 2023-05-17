@@ -44,6 +44,6 @@ def load_controlnet_conditions(folderpath):
                 continue
             if not pl.stem[:-4] in prefixes:
                 continue
-            controlnet_conditions[i][j] = PIL.Image.open(filepath, formats=["RGB"])
+            controlnet_conditions[i][j] = PIL.Image.open(filepath).convert("RGB")
 
     return controlnet_conditions
