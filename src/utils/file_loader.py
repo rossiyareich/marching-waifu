@@ -28,14 +28,17 @@ def load_controlnet_conditions(folderpath):
         "normals",
         "lineart",
     ]
-    controlnet_conditions = []
-    for filepath in glob.iglob(os.path.join(folderpath, "**")):
-        pl = pathlib.Path(filepath)
-        if not os.path.isfile(filepath):
-            continue
-        if not pl.suffix in [".png"]:
-            continue
-        if not pl.stem[:-4] in prefixes:
-            continue
-        controlnet_conditions.append(PIL.Image.open(filepath))
+    controlnet_conditions = [] * 4
+
+    for i, prefix in enumerate(prefixes):
+        for filepath in glob.iglob(os.path.join(folderpath, f"{prefix}*")):
+            pl = pathlib.Path(filepath)
+            if not os.path.isfile(filepath):
+                continue
+            if not pl.suffix in [".png"]:
+                continue
+            if not pl.stem[:-4] in prefixes:
+                continue
+            controlnet_conditions[i].append(PIL.Image.open(filepath))
+
     return controlnet_conditions
