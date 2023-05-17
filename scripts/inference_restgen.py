@@ -19,7 +19,7 @@ ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
 
-def save_overview(overviews, filepath):
+def save_overviews(overviews, filepath):
     if overviews is not None:
         overview_imgs = [image_wrapper(overview) for overview in overviews]
         overview_img = overview_imgs[0]
@@ -118,6 +118,6 @@ def generate_inpaint(indices, gen_rel_index):
 for i in range(1, config["pipeline"]["restgen"]["data_size"]):
     image, seed, overview = generate_inpaint(([i - 1, i, 0] if i > 1 else [0, i]), 1)
     print(f"{(i+1):04}.png : {seed}")
-    save_overview(overview, os.path.join(ngp_overview_folderpath, f"{(i+1):04}.png"))
+    save_overviews(overview, os.path.join(ngp_overview_folderpath, f"{(i+1):04}.png"))
     image = real_esrgan(image)
     image.save(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"))

@@ -19,7 +19,7 @@ ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
 
-def save_overview(overviews, filepath):
+def save_overviews(overviews, filepath):
     if overviews is not None:
         overview_imgs = [image_wrapper(overview) for overview in overviews]
         overview_img = overview_imgs[0]
@@ -60,7 +60,7 @@ fg_prereq_image, fg_prereq_seed, fg_prereq_overview = unet4(
     config["controlnet"]["soft_exp"],
 )
 print(fg_prereq_seed)
-save_overview(
+save_overviews(
     fg_prereq_overview, os.path.join(ngp_overview_folderpath, "0001_prereq.png")
 )
 fg_prereq_image.save(os.path.join(ngp_train_folderpath, "0001_prereq.png"))
@@ -93,6 +93,6 @@ fg_image, fg_seed, fg_overview = unet4(
     image_wrapper(fg_prereq_image).scale(1.0 / 4.0).to_pil(),
 )
 print(fg_seed)
-save_overview(fg_prereq_overview, os.path.join(ngp_overview_folderpath, "0001.png"))
+save_overviews(fg_overview, os.path.join(ngp_overview_folderpath, "0001.png"))
 fg_image = real_esrgan(fg_image)
 fg_image.save(os.path.join(ngp_train_folderpath, "0001.png"))
