@@ -15,3 +15,4 @@ controlnet_aux
 huggingface_hub 
 omegaconf 
 compel
+gdown
