@@ -1,6 +1,7 @@
 import torch
 
 from src.pipelines.controlnet_unet9_pipeline import *
+from src.utils.image_wrapper import *
 from src.utils.torch_utils_extended import *
 from src.workflows.base_sd_workflow import *
 
@@ -50,8 +51,9 @@ class controlnet_unet9_workflow(base_sd_workflow):
 
         interim = []
 
+        @torch.no_grad()
         def cache_interim(step, timestep, latents):
-            interim.append(self.decode_latents(latents))
+            interim.append(image_wrapper(self.pipe.decode_latents(latents)).to_pil())
 
         image = self.pipe(
             prompt_embeds=prompt_embeds,

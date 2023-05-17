@@ -87,13 +87,3 @@ class base_sd_workflow:
         return compel.pad_conditioning_tensors_to_same_length(
             [conditioning, negative_conditioning]
         )
-
-    @torch.no_grad()
-    def decode_latents(self, latents, strength):
-        image = self.vae.decode(
-            latents / self.vae.config.scaling_factor, return_dict=False
-        )[0]
-        do_denormalize = [True] * image.shape[0]
-        return self.image_processor.postprocess(
-            image, output_type="pil", do_denormalize=do_denormalize
-        )[0]
