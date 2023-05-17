@@ -5,9 +5,9 @@ import PIL.Image
 
 class image_wrapper:
     def __init__(self, img):
-        if isinstance(img, PIL.Image):
+        if isinstance(img, PIL.Image.Image):
             self.img = img.copy()
-        elif isinstance(img, np.array):
+        elif isinstance(img, np.ndarray):
             self.img = PIL.Image.fromarray(img)
         elif isinstance(img, cv2.Mat):
             self.img = PIL.Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
