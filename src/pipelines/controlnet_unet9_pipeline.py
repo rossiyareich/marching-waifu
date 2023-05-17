@@ -881,7 +881,6 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
             return get_noised_latents(
                 source_image,
                 lambda img: PIL.Image.new(
-                    "RGB",
                     (width, height),
                     tuple(
                         np.average(

@@ -21,7 +21,7 @@ ngp_train_folderpath = "../data/ngp/train/"
 
 def save_overview(overviews, filepath):
     if overviews is not None:
-        overview_imgs = list(map(image_wrapper, overviews))
+        overview_imgs = [image_wrapper(overview) for overview in overviews]
         overview_img = overview_imgs[0]
         for img in overview_imgs[1:]:
             overview_img.concatenate(img)

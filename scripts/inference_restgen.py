@@ -21,7 +21,7 @@ ngp_train_folderpath = "../data/ngp/train/"
 
 def save_overview(overviews, filepath):
     if overviews is not None:
-        overview_imgs = list(map(image_wrapper, overviews))
+        overview_imgs = [image_wrapper(overview) for overview in overviews]
         overview_img = overview_imgs[0]
         for img in overview_imgs[1:]:
             overview_img.concatenate(img)
@@ -71,14 +71,16 @@ def generate_inpaint(indices, gen_rel_index):
         stitched_image.concatenate(image)
     stitched_image = stitched_image.to_pil()
 
-    controlnet_conditions_set = [list(map(image_wrapper, cc_set[i])) for i in indices]
+    controlnet_conditions_set = [
+        [image_wrapper(cc) for cc in cc_set[i]] for i in indices
+    ]
     controlnet_stitched_conditions = controlnet_conditions_set[0]
     for controlnet_conditions in controlnet_conditions_set[1:]:
         for i, controlnet_condition in enumerate(controlnet_conditions):
             controlnet_stitched_conditions[i].concatenate(controlnet_condition)
-    controlnet_stitched_conditions = list(
-        map(image_wrapper.to_pil, controlnet_stitched_conditions)
-    )
+    controlnet_stitched_conditions = [
+        image_wrapper.to_pil(sc) for sc in controlnet_stitched_conditions
+    ]
 
     stitched_mask = PIL.Image.new("1", (stitched_image.width, stitched_image.height))
     ind_width = stitched_image.width // len(indices)
