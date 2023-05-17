@@ -8,6 +8,10 @@
 
 3D character generation from text with InstantNGP and ControlNet on LDMs!
 
+- End-To-End [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rossiyareich/marching-waifu/blob/main/notebooks/end_to_end.ipynb)
+- LDM checkpoint conversion [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rossiyareich/marching-waifu/blob/main/notebooks/ldm_checkpoint_to_diffusers.ipynb)
+
+
 ## Related resources:
 - Original model weights
     - [.safetensors Archives](https://drive.google.com/file/d/1cVP7jaLowGlW82UEHPJxJrFykkBD8PZi/)
