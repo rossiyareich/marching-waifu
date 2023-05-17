@@ -60,7 +60,7 @@ real_esrgan = real_esrgan_workflow()
 def generate_inpaint(indices, gen_rel_index):
     image_set = [
         image_wrapper(
-            PIL.Image.open(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"))
+            PIL.Image.open(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"), formats="RGB")
         ).scale(1.0 / 4.0)
         for i in indices
     ]
