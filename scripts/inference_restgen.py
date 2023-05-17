@@ -1,9 +1,9 @@
 import os
 import sys
 
-import PIL.Image
-
 sys.path.append("../../")
+
+import PIL.Image
 
 from src.utils.file_loader import *
 from src.utils.image_wrapper import *

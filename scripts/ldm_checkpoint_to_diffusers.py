@@ -1,8 +1,8 @@
 import sys
 
-import torch
-
 sys.path.append("../../")
+
+import torch
 
 from src.pipelines.convert_from_ckpt import *
 from src.utils.file_loader import *
