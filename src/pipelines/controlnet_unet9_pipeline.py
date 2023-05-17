@@ -28,8 +28,8 @@ from diffusers.utils import (
 )
 from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
 
-from ..utils.image_wrapper import *
-from ..utils.torch_utils_extended import *
+from src.utils.image_wrapper import *
+from src.utils.torch_utils_extended import *
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 

@@ -1,10 +1,10 @@
 import os
 import PIL.Image
 
-from ..src.utils.file_loader import *
-from ..src.utils.image_wrapper import *
-from ..src.workflows.controlnet_unet9_workflow import *
-from ..src.workflows.real_esrgan_workflow import *
+from src.utils.file_loader import *
+from src.utils.image_wrapper import *
+from src.workflows.controlnet_unet9_workflow import *
+from src.workflows.real_esrgan_workflow import *
 
 
 config_filepath = "inference.json"

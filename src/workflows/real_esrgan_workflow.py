@@ -4,7 +4,7 @@ from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
 from realesrgan import RealESRGANer
 
-from ..utils.image_wrapper import *
+from src.utils.image_wrapper import *
 
 
 class real_esrgan_workflow:
