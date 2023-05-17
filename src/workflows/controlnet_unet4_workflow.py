@@ -1,7 +1,6 @@
 import torch
 
-from workflows.base_sd_workflow import *
-
+from src.workflows.base_sd_workflow import *
 from src.pipelines.controlnet_unet4_pipeline import *
 from src.utils.torch_utils_extended import *
 
