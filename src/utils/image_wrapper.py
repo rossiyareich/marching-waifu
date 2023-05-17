@@ -11,6 +11,8 @@ class image_wrapper:
             self.img = PIL.Image.fromarray(img)
         elif isinstance(img, cv2.Mat):
             self.img = PIL.Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        else:
+            raise TypeError()
 
     def to_pil(self):
         return self.img
