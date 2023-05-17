@@ -6,7 +6,7 @@
     </a>
 </p>
 
-3D character generation from text with InstantNGP and ControlNet on LDMs!
+Complete 3D character generation from text with InstantNGP and ControlNet on LDMs, along with animation retargeting from T2M-GPT!
 
 - End-To-End
 <br>[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rossiyareich/marching-waifu/blob/main/notebooks/end_to_end.ipynb)
