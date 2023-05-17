@@ -16,7 +16,6 @@ class base_sd_workflow:
         self.controlnet = None
         self.pipe = None
         self.generator = None
-        self.weighted_embeds = None
 
     def load_vae(self, repo_id):
         self.vae = AutoencoderKL.from_pretrained(repo_id, torch_dtype=torch.float16)
@@ -35,7 +34,9 @@ class base_sd_workflow:
         ]
 
         self.controlnet = [
-            ControlNetModel.from_pretrained(repo_id, torch_dtype=torch.float16).to("cuda")
+            ControlNetModel.from_pretrained(repo_id, torch_dtype=torch.float16).to(
+                "cuda"
+            )
             for repo_id in repo_ids
         ]
 
@@ -83,7 +84,7 @@ class base_sd_workflow:
 
         conditioning = compel.build_conditioning_tensor(prompt)
         negative_conditioning = compel.build_conditioning_tensor(negative_prompt)
-        self.weighted_embeds = compel.pad_conditioning_tensors_to_same_length(
+        return compel.pad_conditioning_tensors_to_same_length(
             [conditioning, negative_conditioning]
         )
 
