@@ -30,7 +30,7 @@ def load_controlnet_conditions(folderpath):
     ]
 
     controlnet_conditions = [
-        [None] * 4 for _ in range(len(glob.iglob(os.path.join(folderpath, "**"))))
+        [None] * 4 for _ in range(len(list(glob.iglob(os.path.join(folderpath, "**")))))
     ]
 
     for j, prefix in enumerate(prefixes):
