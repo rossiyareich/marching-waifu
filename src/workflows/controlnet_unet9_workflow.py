@@ -1,8 +1,8 @@
 import torch
 
-from src.workflows.base_sd_workflow import *
 from src.pipelines.controlnet_unet9_pipeline import *
 from src.utils.torch_utils_extended import *
+from src.workflows.base_sd_workflow import *
 
 
 class controlnet_unet9_workflow(base_sd_workflow):

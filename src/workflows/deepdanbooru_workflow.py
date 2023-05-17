@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("../ext/AnimeFaceNotebooks/DeepDanbooru")
-
 import collections
 
 import deepdanbooru as dd
@@ -24,7 +20,7 @@ class deepdanbooru_workflow:
         self.model_width = self.classif_model.input_shape[2]
         self.model_height = self.classif_model.input_shape[1]
         self.all_tags = np.array(self.all_tags)
-    
+
     def load_prompts(self, multiplier, prefix):
         self.prompt = prefix
         for tag, prob in self.sorted_results.items():
@@ -39,7 +35,9 @@ class deepdanbooru_workflow:
         image = np.array([image])
 
         # Decode
-        result = self.classif_model.predict(image).reshape(-1, self.all_tags.shape[0])[0]
+        result = self.classif_model.predict(image).reshape(-1, self.all_tags.shape[0])[
+            0
+        ]
 
         result_tags = {}
         for i in range(len(self.all_tags)):

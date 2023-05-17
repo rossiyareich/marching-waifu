@@ -1,9 +1,12 @@
+import sys
+
 import torch
 
-from src.utils.file_loader import *
-from src.pipelines.convert_from_ckpt import *
-from src.utils.torch_utils_extended import *
+sys.path.append("../../")
 
+from src.pipelines.convert_from_ckpt import *
+from src.utils.file_loader import *
+from src.utils.torch_utils_extended import *
 
 config_file = "ldm.json"
 

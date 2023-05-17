@@ -1,11 +1,13 @@
 import os
+import sys
+
+sys.path.append("../../")
 
 from src.utils.file_loader import *
 from src.utils.image_wrapper import *
 from src.workflows.controlnet_unet4_workflow import *
 from src.workflows.deepdanbooru_workflow import *
 from src.workflows.real_esrgan_workflow import *
-
 
 config_filepath = "inference.json"
 prompt_addition_filepath = "../data/prompts/prompt_additions.json"
