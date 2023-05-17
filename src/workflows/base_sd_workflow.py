@@ -35,7 +35,7 @@ class base_sd_workflow:
         ]
 
         self.controlnet = [
-            ControlNetModel.from_pretrained(repo_id, dtype=torch.float16).to("cuda")
+            ControlNetModel.from_pretrained(repo_id, torch_dtype=torch.float16).to("cuda")
             for repo_id in repo_ids
         ]
 
