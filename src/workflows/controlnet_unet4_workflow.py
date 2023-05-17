@@ -7,7 +7,7 @@ from src.workflows.base_sd_workflow import *
 
 class controlnet_unet4_workflow(base_sd_workflow):
     def __init__(self, vae_repo_id, ldm_repo_id, textual_inversion_folderpath, ops):
-        super.__init__()
+        super().__init__()
 
         self.load_vae(vae_repo_id)
         self.load_image_processor()

@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append("../../")
+sys.path.append("..")
 
 from src.utils.file_loader import *
 from src.utils.image_wrapper import *
