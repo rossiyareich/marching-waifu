@@ -9,7 +9,6 @@ accelerate
 diffusers
 transformers 
 xformers 
-safetensors 
 opencv-contrib-python 
 safetensors
 controlnet_aux 
