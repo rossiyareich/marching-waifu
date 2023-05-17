@@ -5,11 +5,11 @@ import PIL.Image
 
 class image_wrapper:
     def __init__(self, img):
-        if img.isinstance(PIL.Image):
+        if isinstance(img, PIL.Image):
             self.img = img.copy()
-        elif img.isinstance(np.array):
+        elif isinstance(img, np.array):
             self.img = PIL.Image.fromarray(img)
-        elif img.isinstance(cv2.Mat):
+        elif isinstance(img, cv2.Mat):
             self.img = PIL.Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
     def to_pil(self):
