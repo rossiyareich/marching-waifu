@@ -874,7 +874,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(DiffusionPipeline):
                     (width, height),
                     tuple(
                         np.average(
-                            np.average(image(img).to_np(), axis=0),
+                            np.average(image_wrapper(img).to_np(), axis=0),
                             axis=0,
                         )
                     ),

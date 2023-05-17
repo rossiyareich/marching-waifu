@@ -17,6 +17,15 @@ ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
 
+def save_overview(overviews, filepath):
+    if overviews is not None:
+        overview_imgs = list(map(image_wrapper, overviews))
+        overview_img = overview_imgs[0]
+        for img in overview_imgs[1:]:
+            overview_img.concatenate(img)
+        overview_img.to_pil().save(filepath)
+
+
 config = load_config(config_filepath)
 unet4 = controlnet_unet4_workflow(
     config["models"]["vae_repo_id"],
@@ -49,8 +58,9 @@ fg_prereq_image, fg_prereq_seed, fg_prereq_overview = unet4(
     config["controlnet"]["soft_exp"],
 )
 print(fg_prereq_seed)
-if fg_prereq_overview is not None:
-    fg_prereq_overview.save(os.path.join(ngp_overview_folderpath, "0001_prereq.png"))
+save_overview(
+    fg_prereq_overview, os.path.join(ngp_overview_folderpath, "0001_prereq.png")
+)
 fg_prereq_image.save(os.path.join(ngp_train_folderpath, "0001_prereq.png"))
 
 deepdanbooru = deepdanbooru_workflow(deepdanbooru_project_folderpath)
@@ -58,7 +68,9 @@ deepdanbooru(
     os.path.join(ngp_train_folderpath, "0001_prereq.png"),
     config["deepdanbooru"]["threshold"],
 )
-deepdanbooru.load_prompts(config["deepdanbooru"]["multiplier"])
+deepdanbooru.load_prompts(
+    config["deepdanbooru"]["multiplier"], config["deepdanbooru"]["prefix"]
+)
 with open(deepdanbooru_prompt_filepath, "w") as f:
     f.write(deepdanbooru.prompt)
 
@@ -76,10 +88,9 @@ fg_image, fg_seed, fg_overview = unet4(
     cc_set[0],
     controlnet_scales,
     config["controlnet"]["soft_exp"],
-    image(fg_prereq_image).scale(1.0 / 4.0).to_pil(),
+    image_wrapper(fg_prereq_image).scale(1.0 / 4.0).to_pil(),
 )
 print(fg_seed)
-if fg_overview is not None:
-    fg_overview.save(os.path.join(ngp_overview_folderpath, "0001.png"))
+save_overview(fg_prereq_overview, os.path.join(ngp_overview_folderpath, "0001.png"))
 fg_image = real_esrgan(fg_image)
 fg_image.save(os.path.join(ngp_train_folderpath, "0001.png"))

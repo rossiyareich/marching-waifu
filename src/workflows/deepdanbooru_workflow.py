@@ -19,7 +19,13 @@ class deepdanbooru_workflow:
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
 
-    def load_prompts(self, multiplier, prefix="({0})++"):
+        self.classif_model = dd.project.load_model_from_project(self.project_path)
+        self.all_tags = dd.project.load_tags_from_project(self.project_path)
+        self.model_width = self.classif_model.input_shape[2]
+        self.model_height = self.classif_model.input_shape[1]
+        self.all_tags = np.array(self.all_tags)
+    
+    def load_prompts(self, multiplier, prefix):
         self.prompt = prefix
         for tag, prob in self.sorted_results.items():
             tag_strength = prob * multiplier
@@ -27,24 +33,18 @@ class deepdanbooru_workflow:
         self.prompt = self.prompt[:-1]
 
     def __call__(self, imagepath, threshold):
-        classif_model = dd.project.load_model_from_project(self.project_path)
-        all_tags = dd.project.load_tags_from_project(self.project_path)
-        model_width = classif_model.input_shape[2]
-        model_height = classif_model.input_shape[1]
-        all_tags = np.array(all_tags)
-
         image = dd.data.load_image_for_evaluate(
-            imagepath, width=model_width, height=model_height
+            imagepath, width=self.model_width, height=self.model_height
         )
         image = np.array([image])
 
         # Decode
-        result = classif_model.predict(image).reshape(-1, all_tags.shape[0])[0]
+        result = self.classif_model.predict(image).reshape(-1, self.all_tags.shape[0])[0]
 
         result_tags = {}
-        for i in range(len(all_tags)):
+        for i in range(len(self.all_tags)):
             if result[i] > threshold:
-                result_tags[all_tags[i]] = result[i]
+                result_tags[self.all_tags[i]] = result[i]
         sorted_tags = reversed(sorted(result_tags.keys(), key=lambda x: result_tags[x]))
         self.sorted_results = collections.OrderedDict()
         for tag in sorted_tags:

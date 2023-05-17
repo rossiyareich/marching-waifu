@@ -3,10 +3,10 @@ import numpy as np
 import PIL.Image
 
 
-class image:
-    def __init__(self, img, copy=True):
+class image_wrapper:
+    def __init__(self, img):
         if img.isinstance(PIL.Image):
-            self.img = img.copy() if copy else img
+            self.img = img.copy()
         elif img.isinstance(np.array):
             self.img = PIL.Image.fromarray(img)
         elif img.isinstance(cv2.Mat):
@@ -22,10 +22,11 @@ class image:
         return cv2.cvtColor(np.array(self.img), cv2.COLOR_RGB2BGR)
 
     def resize(self, width, height):
-        return image(self.img.resize((width, height), PIL.Image.Resampling.LANCZOS), copy=False)
+        self.img = self.img.resize((width, height), PIL.Image.Resampling.LANCZOS)
+        return self
 
     def scale(self, scale):
-        return image(self.img.resize(int(self.img.width * scale), int(self.img.height * scale)), copy=False)
+        return self.resize(int(self.img.width * scale), int(self.img.height * scale))
 
     def concatenate(self, other, axis=0):
         width, height = self.img.width, self.img.height
@@ -43,4 +44,5 @@ class image:
         elif axis == 1:
             new_image.paste(other.img, (0, height))
 
-        return image(new_image, copy=False)
+        self.img = new_image
+        return self

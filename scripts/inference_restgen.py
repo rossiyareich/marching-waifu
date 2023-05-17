@@ -16,6 +16,15 @@ ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
 
+def save_overview(overviews, filepath):
+    if overviews is not None:
+        overview_imgs = list(map(image_wrapper, overviews))
+        overview_img = overview_imgs[0]
+        for img in overview_imgs[1:]:
+            overview_img.concatenate(img)
+        overview_img.to_pil().save(filepath)
+
+
 config = load_config(config_filepath)
 unet9 = controlnet_unet9_workflow(
     config["models"]["vae_repo_id"],
@@ -44,35 +53,27 @@ with open(deepdanbooru_prompt_filepath, "r") as f:
 
 real_esrgan = real_esrgan_workflow()
 
+
 def generate_inpaint(indices, gen_rel_index):
     image_set = [
-        image(
+        image_wrapper(
             PIL.Image.open(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"))
         ).scale(1.0 / 4.0)
         for i in indices
     ]
-    stitched_image = image(image_set[0].to_pil())
-    for image_ in image_set[1:]:
-        stitched_image = stitched_image.concatenate(image_)
+    stitched_image = image_set[0]
+    for image in image_set[1:]:
+        stitched_image.concatenate(image)
     stitched_image = stitched_image.to_pil()
 
-    controlnet_conditions_set = [
-        [image(controlnet_condition) for controlnet_condition in controlnet_conditions]
-        for controlnet_conditions in cc_set
-    ]
-    controlnet_stitched_conditions = [
-        image(controlnet_condition.to_pil())
-        for controlnet_condition in controlnet_conditions_set[0]
-    ]
+    controlnet_conditions_set = [list(map(image_wrapper, cc_set[i])) for i in indices]
+    controlnet_stitched_conditions = controlnet_conditions_set[0]
     for controlnet_conditions in controlnet_conditions_set[1:]:
         for i, controlnet_condition in enumerate(controlnet_conditions):
-            controlnet_stitched_conditions[i] = controlnet_stitched_conditions[
-                i
-            ].concatenate(controlnet_condition)
-    controlnet_stitched_conditions = [
-        controlnet_stitched_condition.to_pil()
-        for controlnet_stitched_condition in controlnet_stitched_conditions
-    ]
+            controlnet_stitched_conditions[i].concatenate(controlnet_condition)
+    controlnet_stitched_conditions = list(
+        map(image_wrapper.to_pil, controlnet_stitched_conditions)
+    )
 
     stitched_mask = PIL.Image.new("1", (stitched_image.width, stitched_image.height))
     ind_width = stitched_image.width // len(indices)
@@ -84,7 +85,7 @@ def generate_inpaint(indices, gen_rel_index):
     )
     stitched_mask = stitched_mask.paste(True, inpaint_region)
 
-    image_, seed, overview = unet9(
+    image, seed, overview = unet9(
         prompt.format(prompt_additions[indices[gen_rel_index]]),
         config["pipeline"]["restgen"]["negative_prompt"],
         stitched_image,
@@ -100,13 +101,16 @@ def generate_inpaint(indices, gen_rel_index):
         config["pipeline"]["restgen"]["inpaint_method"],
     )
 
-    return image_.crop(inpaint_region), seed, overview
+    return (
+        image_wrapper(image).crop(inpaint_region).to_pil(),
+        seed,
+        [image_wrapper(img).crop(inpaint_region).to_pil() for img in overview],
+    )
 
 
-for i in range(1, config["pipeline"]["restgen"]["data_size"] + 1):
-    image_, seed, overview = generate_inpaint(([i - 1, i, 0] if i > 1 else [0, i]), 1)
+for i in range(1, config["pipeline"]["restgen"]["data_size"]):
+    image, seed, overview = generate_inpaint(([i - 1, i, 0] if i > 1 else [0, i]), 1)
     print(f"{(i+1):04}.png : {seed}")
-    if overview is not None:
-        overview.save(os.path.join(ngp_overview_folderpath, f"{(i+1):04}.png"))
-    image_ = real_esrgan(image_)
-    image_.save(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"))
+    save_overview(overview, os.path.join(ngp_overview_folderpath, f"{(i+1):04}.png"))
+    image = real_esrgan(image)
+    image.save(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"))

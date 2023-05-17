@@ -71,7 +71,7 @@ class real_esrgan_workflow:
             )
 
     def __call__(self, source_img):
-        source_img = image(source_img)
+        source_img = image_wrapper(source_img).to_np()
 
         try:
             if self.face_enhancer is not None:
@@ -90,4 +90,4 @@ class real_esrgan_workflow:
             )
         else:
             extension = extension[1:]
-            return image(output).to_pil()
+            return image_wrapper(output).to_pil()

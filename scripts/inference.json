@@ -19,7 +19,8 @@
     ],
     "deepdanbooru": {
         "threshold": 0.08,
-        "multiplier": 1.1
+        "multiplier": 1.1,
+        "prefix": "(masterpiece, best quality, {0})++, "
     },
     "pipeline": {
         "firstgen": {

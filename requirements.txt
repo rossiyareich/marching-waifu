@@ -11,6 +11,7 @@ transformers
 xformers 
 safetensors 
 opencv-contrib-python 
+safetensors
 controlnet_aux 
 huggingface_hub 
 omegaconf 

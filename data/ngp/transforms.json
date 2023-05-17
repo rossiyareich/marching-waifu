@@ -11,7 +11,7 @@
     "cy": 1920.0,
     "w": 3072.0,
     "h": 3840.0,
-    "aabb_scale": 4,
+    "aabb_scale": 1,
     "frames": [
         {
             "file_path": "train\\0001.png",
