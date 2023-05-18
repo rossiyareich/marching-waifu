@@ -1,7 +1,7 @@
 accelerate 
 diffusers
 transformers 
-xformers>=0.0.19
+xformers
 opencv-contrib-python 
 safetensors
 controlnet_aux 
