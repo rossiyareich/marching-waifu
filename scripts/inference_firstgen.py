@@ -105,7 +105,7 @@ def work_run_firstgen():
         config["pipeline"]["firstgen"]["steps"],
         config["pipeline"]["firstgen"]["cfg_scale"],
         config["pipeline"]["firstgen"]["img2img_denoising_strength"],
-        config["pipeline"]["firstgen"]["img2img_seed"],
+        config["pipeline"]["firstgen"]["img2img_denoising_seed"],
         config["pipeline"]["firstgen"]["callback_steps"],
         cc_set[0],
         cc_scales,
