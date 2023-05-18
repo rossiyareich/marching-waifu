@@ -8,7 +8,7 @@ tensorflow
 accelerate 
 diffusers
 transformers 
-xformers==0.0.20.dev539
+xformers
 opencv-contrib-python 
 safetensors
 controlnet_aux 
