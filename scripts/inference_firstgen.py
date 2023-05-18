@@ -5,6 +5,7 @@ sys.path.append("..")
 
 from src.utils.file_loader import *
 from src.utils.image_wrapper import *
+from src.utils.torch_utils_extended import *
 from src.workflows.controlnet_unet4_workflow import *
 from src.workflows.deepdanbooru_workflow import *
 from src.workflows.real_esrgan_workflow import *
@@ -138,6 +139,12 @@ if __name__ == "__main__":
     work_run_firstgen_prereq()
     work_load_real_esrgan()
     work_run_real_esrgan()
+
+    del unet4
+    empty_cache()
+
     work_load_deepdanbooru()
     work_run_deepdanbooru()
+    
+    work_load_unet4()
     work_run_firstgen()
