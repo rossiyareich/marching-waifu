@@ -809,7 +809,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
 
     def prepare_latents(
         self,
-        source_image,
+        image,
         timestep,
         batch_size,
         num_images_per_prompt,
@@ -833,6 +833,13 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
                 raise ValueError(
                     f"`image` has to be of type `PIL.Image.Image` or list but is {type(source_image)}"
                 )
+
+            if isinstance(source_image, PIL.Image.Image):
+                source_image = transformation(source_image)
+            elif isinstance(source_image, list):
+                source_image = [transformation(img) for img in source_image]
+            source_image = prepare_image(source_image)
+
             source_image = source_image.to(device=device, dtype=dtype)
 
             if isinstance(generator, list):
@@ -879,7 +886,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
 
         if fill_mode == "mean_fill":
             return get_noised_latents(
-                source_image,
+                image,
                 lambda img: PIL.Image.new(
                     (width, height),
                     tuple(
@@ -892,7 +899,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
             )
 
         if fill_mode == "original":
-            return get_noised_latents(source_image)
+            return get_noised_latents(image)
 
         if fill_mode == "latent_rand":
             latents = randn_tensor(

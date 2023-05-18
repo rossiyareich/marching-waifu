@@ -71,7 +71,7 @@ class real_esrgan_workflow:
             )
 
     def __call__(self, source_img):
-        source_img = image_wrapper(source_img).to_cv2()
+        source_img = image_wrapper(source_img, "pil").to_cv2()
 
         try:
             if self.face_enhancer is not None:
@@ -89,4 +89,4 @@ class real_esrgan_workflow:
                 "If you encounter CUDA out of memory, try to set --tile with a smaller number."
             )
         else:
-            return image_wrapper(output).to_pil()
+            return image_wrapper(output, "cv2").to_pil()

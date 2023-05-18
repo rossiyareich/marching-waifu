@@ -52,7 +52,7 @@ def work_load_unet4():
 
 def work_save_overviews(overviews, filepath):
     if overviews is not None:
-        overview_imgs = [image_wrapper(overview) for overview in overviews]
+        overview_imgs = [image_wrapper(overview, "pil") for overview in overviews]
         overview_img = overview_imgs[0]
         for img in overview_imgs[1:]:
             overview_img.concatenate(img)
@@ -110,7 +110,7 @@ def work_run_firstgen():
         cc_set[0],
         cc_scales,
         config["controlnet"]["soft_exp"],
-        image_wrapper(fg_prereq_image).scale(1.0 / 4.0).to_pil(),
+        image_wrapper(fg_prereq_image, "pil").scale(1.0 / 4.0).to_pil(),
     )
     print(seed)
     work_save_overviews(overview, os.path.join(ngp_overview_folderpath, "0001.png"))

@@ -4,15 +4,15 @@ import PIL.Image
 
 
 class image_wrapper:
-    def __init__(self, img):
-        if isinstance(img, PIL.Image.Image):
+    def __init__(self, img, format):
+        if format == "pil":
             self.img = img.copy()
-        elif isinstance(img, np.ndarray):
+        elif format == "np":
             self.img = PIL.Image.fromarray(img)
-        elif isinstance(img, cv2.Mat):
+        elif format == "cv2":
             self.img = PIL.Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         else:
-            raise TypeError(f"Unsupported type: {type(img)}")
+            raise TypeError(f"Unsupported type: {format}")
 
     def to_pil(self):
         return self.img

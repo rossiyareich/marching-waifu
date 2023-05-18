@@ -742,6 +742,13 @@ class StableDiffusionControlNetImg2ImgPipeline(
                 raise ValueError(
                     f"`image` has to be of type `PIL.Image.Image` or list but is {type(source_image)}"
                 )
+
+            if isinstance(source_image, PIL.Image.Image):
+                source_image = transformation(source_image)
+            elif isinstance(source_image, list):
+                source_image = [transformation(img) for img in source_image]
+            source_image = prepare_image(source_image)
+
             source_image = source_image.to(device=device, dtype=dtype)
 
             if isinstance(generator, list):
@@ -793,8 +800,8 @@ class StableDiffusionControlNetImg2ImgPipeline(
             # scale the initial noise by the standard deviation required by the scheduler
             latents = latents * self.scheduler.init_noise_sigma
             return latents
-
-        return get_noised_latents(image)
+        else:
+            return get_noised_latents(image)
 
     def _default_height_width(self, height, width, image):
         if isinstance(image, list):
@@ -996,7 +1003,6 @@ class StableDiffusionControlNetImg2ImgPipeline(
         )
 
         # 4. Prepare controlnet_conditioning_image
-        # condition image(s)
         if isinstance(self.controlnet, ControlNetModel):
             controlnet_conditioning_image = prepare_controlnet_conditioning_image(
                 controlnet_conditioning_image=controlnet_conditioning_image,

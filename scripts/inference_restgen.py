@@ -58,7 +58,7 @@ def work_load_unet9():
 
 def work_save_overviews(overviews, filepath):
     if overviews is not None:
-        overview_imgs = [image_wrapper(overview) for overview in overviews]
+        overview_imgs = [image_wrapper(overview, "pil") for overview in overviews]
         overview_img = overview_imgs[0]
         for img in overview_imgs[1:]:
             overview_img.concatenate(img)
@@ -70,7 +70,8 @@ def work_generate_inpaint(indices, gen_rel_index):
         image_wrapper(
             PIL.Image.open(
                 os.path.join(ngp_train_folderpath, f"{(i+1):04}.png")
-            ).convert("RGB")
+            ).convert("RGB"),
+            "pil",
         ).scale(1.0 / 4.0)
         for i in indices
     ]
@@ -80,7 +81,7 @@ def work_generate_inpaint(indices, gen_rel_index):
     stitched_image = stitched_image.to_pil()
 
     controlnet_conditions_set = [
-        [image_wrapper(cc) for cc in cc_set[i]] for i in indices
+        [image_wrapper(cc, "pil") for cc in cc_set[i]] for i in indices
     ]
     controlnet_stitched_conditions = controlnet_conditions_set[0]
     for controlnet_conditions in controlnet_conditions_set[1:]:
@@ -117,9 +118,9 @@ def work_generate_inpaint(indices, gen_rel_index):
     )
 
     return (
-        image_wrapper(image).crop(inpaint_region).to_pil(),
+        image_wrapper(image, "pil").crop(inpaint_region).to_pil(),
         seed,
-        [image_wrapper(img).crop(inpaint_region).to_pil() for img in overview],
+        [image_wrapper(img, "pil").crop(inpaint_region).to_pil() for img in overview],
     )
 
 
