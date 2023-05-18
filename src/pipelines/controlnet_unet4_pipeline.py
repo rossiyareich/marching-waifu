@@ -737,32 +737,29 @@ class StableDiffusionControlNetImg2ImgPipeline(
                 f" size of {batch_size}. Make sure the batch size matches the length of the generators."
             )
 
-        def get_noised_latents(source_image, transformation=(lambda img: img)):
-            if not isinstance(source_image, (PIL.Image.Image, list)):
+        def get_noised_latents(image, transformation=(lambda img: img)):
+            if not isinstance(image, (PIL.Image.Image, list)):
                 raise ValueError(
-                    f"`image` has to be of type `PIL.Image.Image` or list but is {type(source_image)}"
+                    f"`image` has to be of type `PIL.Image.Image` or list but is {type(image)}"
                 )
 
-            if isinstance(source_image, PIL.Image.Image):
-                source_image = transformation(source_image)
-            elif isinstance(source_image, list):
-                source_image = [transformation(img) for img in source_image]
-            source_image = prepare_image(source_image)
-
-            source_image = source_image.to(device=device, dtype=dtype)
+            if isinstance(image, PIL.Image.Image):
+                image = transformation(image)
+            elif isinstance(image, list):
+                image = [transformation(img) for img in image]
+            image = prepare_image(image)
+            image = image.to(device=device, dtype=dtype)
 
             if isinstance(generator, list):
                 init_latents = [
                     self.vae.encode(
-                        transformation(source_image[i : i + 1])
+                        transformation(image[i : i + 1])
                     ).latent_dist.sample(generator[i])
                     for i in range(batch_size)
                 ]
                 init_latents = torch.cat(init_latents, dim=0)
             else:
-                init_latents = self.vae.encode(source_image).latent_dist.sample(
-                    generator
-                )
+                init_latents = self.vae.encode(image).latent_dist.sample(generator)
 
             init_latents = self.vae.config.scaling_factor * init_latents
 

@@ -105,7 +105,7 @@ def work_generate_inpaint(indices, gen_rel_index):
         ind_width * (gen_rel_index + 1),
         stitched_image.height,
     )
-    stitched_mask = stitched_mask.paste(True, inpaint_region)
+    stitched_mask.paste(True, inpaint_region)
 
     image, seed, overview = unet9(
         prompt.format(prompt_additions[indices[gen_rel_index]]),

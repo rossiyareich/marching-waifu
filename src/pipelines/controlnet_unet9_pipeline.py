@@ -828,32 +828,27 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
                 f" size of {batch_size}. Make sure the batch size matches the length of the generators."
             )
 
-        def get_noised_latents(source_image, transformation=(lambda img: img)):
-            if not isinstance(source_image, (PIL.Image.Image, list)):
+        def get_noised_latents(image, transformation=(lambda img: img)):
+            if not isinstance(image, (torch.Tensor, PIL.Image.Image, list)):
                 raise ValueError(
-                    f"`image` has to be of type `PIL.Image.Image` or list but is {type(source_image)}"
+                    f"`image` has to be of type `torch.Tensor`, `PIL.Image.Image` or list but is {type(image)}"
                 )
 
-            if isinstance(source_image, PIL.Image.Image):
-                source_image = transformation(source_image)
-            elif isinstance(source_image, list):
-                source_image = [transformation(img) for img in source_image]
-            source_image = prepare_image(source_image)
-
-            source_image = source_image.to(device=device, dtype=dtype)
+            if isinstance(image, PIL.Image.Image):
+                image = transformation(image)
+            elif isinstance(image, list):
+                image = [transformation(img) for img in image]
+            image = prepare_image(image)
+            image = image.to(device=device, dtype=dtype)
 
             if isinstance(generator, list):
                 init_latents = [
-                    self.vae.encode(
-                        transformation(source_image[i : i + 1])
-                    ).latent_dist.sample(generator[i])
+                    self.vae.encode(image[i : i + 1]).latent_dist.sample(generator[i])
                     for i in range(batch_size)
                 ]
                 init_latents = torch.cat(init_latents, dim=0)
             else:
-                init_latents = self.vae.encode(source_image).latent_dist.sample(
-                    generator
-                )
+                init_latents = self.vae.encode(image).latent_dist.sample(generator)
 
             init_latents = self.vae.config.scaling_factor * init_latents
 
@@ -897,18 +892,15 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
                     ),
                 ),
             )
-
-        if fill_mode == "original":
+        elif fill_mode == "original":
             return get_noised_latents(image)
-
-        if fill_mode == "latent_rand":
+        elif fill_mode == "latent_rand":
             latents = randn_tensor(
                 get_latents_shape(), generator=generator, device=device, dtype=dtype
             )
             latents = latents * self.scheduler.init_noise_sigma
             return latents
-
-        if fill_mode == "latent_none":
+        elif fill_mode == "latent_none":
             latents = zeros_tensor(
                 get_latents_shape(), generator=generator, device=device, dtype=dtype
             )
@@ -1193,9 +1185,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
         )
 
         # 4. Prepare mask, image, and controlnet_conditioning_image
-        original_image = image.copy()
-        image = prepare_image(image)
-
+        prepared_image = prepare_image(image.copy())
         mask_image = prepare_mask_image(mask_image)
 
         controlnet_conditioning_image = prepare_controlnet_conditioning_image(
@@ -1208,7 +1198,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
             self.controlnet.dtype,
         )
 
-        masked_image = image * (mask_image < 0.5)
+        masked_image = prepared_image * (mask_image < 0.5)
 
         # 5. Prepare timesteps
         self.scheduler.set_timesteps(num_inference_steps, device=device)
@@ -1220,7 +1210,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
         # 6. Prepare latent variables
         num_channels_latents = self.vae.config.latent_channels
         latents = self.prepare_latents(
-            original_image,
+            image,
             latent_timestep,
             batch_size,
             num_images_per_prompt,
