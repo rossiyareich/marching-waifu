@@ -86,6 +86,7 @@ def work_load_real_esrgan():
 
 
 def work_run_real_esrgan():
+    global fg_prereq_image
     fg_prereq_image = real_esrgan(fg_prereq_image)
     fg_prereq_image.save(os.path.join(ngp_train_folderpath, "0001_prereq.png"))
 
