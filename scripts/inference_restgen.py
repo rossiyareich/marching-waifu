@@ -135,15 +135,19 @@ if __name__ == "__main__":
     work_load_controlnet_conditions()
     work_load_deepdanbooru_prompts()
     work_load_unet9()
+    empty_cache()
     work_load_real_esrgan()
+    empty_cache()
 
     for i in range(1, config["pipeline"]["restgen"]["data_size"]):
         image, seed, overview = work_generate_inpaint(
             ([i - 1, i, 0] if i > 1 else [0, i]), 1
         )
+        empty_cache()
         print(f"{(i+1):04}.png : {seed}")
         work_save_overviews(
             overview, os.path.join(ngp_overview_folderpath, f"{(i+1):04}.png")
         )
         image = real_esrgan(image)
+        empty_cache()
         image.save(os.path.join(ngp_train_folderpath, f"{(i+1):04}.png"))
