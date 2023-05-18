@@ -19,17 +19,17 @@ ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
 
-def load_config():
+def work_load_config():
     global config
     config = load_config(config_filepath)
 
 
-def load_prompt_additions():
+def work_load_prompt_additions():
     global prompt_additions
     prompt_additions = load_prompt_addition(prompt_addition_filepath)
 
 
-def load_controlnet_conditions():
+def work_load_controlnet_conditions():
     global cc_set, cc_scales
     cc_set = load_controlnet_conditions(controlnet_conditions_folderpath)
     cc_scales = [
@@ -40,13 +40,13 @@ def load_controlnet_conditions():
     ]
 
 
-def load_deepdanbooru_prompts():
+def work_load_deepdanbooru_prompts():
     global prompt
     with open(deepdanbooru_prompt_filepath, "r") as f:
         prompt = f.read()
 
 
-def load_unet9():
+def work_load_unet9():
     global unet9
     unet9 = controlnet_unet9_workflow(
         config["models"]["vae_repo_id"],
@@ -56,7 +56,7 @@ def load_unet9():
     )
 
 
-def save_overviews(overviews, filepath):
+def work_save_overviews(overviews, filepath):
     if overviews is not None:
         overview_imgs = [image_wrapper(overview) for overview in overviews]
         overview_img = overview_imgs[0]
@@ -65,7 +65,7 @@ def save_overviews(overviews, filepath):
         overview_img.to_pil().save(filepath)
 
 
-def generate_inpaint(indices, gen_rel_index):
+def work_generate_inpaint(indices, gen_rel_index):
     image_set = [
         image_wrapper(
             PIL.Image.open(
@@ -123,25 +123,25 @@ def generate_inpaint(indices, gen_rel_index):
     )
 
 
-def load_real_esrgan():
+def work_load_real_esrgan():
     global real_esrgan
     real_esrgan = real_esrgan_workflow()
 
 
 if __name__ == "__main__":
-    load_config()
-    load_prompt_additions()
-    load_controlnet_conditions()
-    load_deepdanbooru_prompts()
-    load_unet9()
-    load_real_esrgan()
+    work_load_config()
+    work_load_prompt_additions()
+    work_load_controlnet_conditions()
+    work_load_deepdanbooru_prompts()
+    work_load_unet9()
+    work_load_real_esrgan()
 
     for i in range(1, config["pipeline"]["restgen"]["data_size"]):
-        image, seed, overview = generate_inpaint(
+        image, seed, overview = work_generate_inpaint(
             ([i - 1, i, 0] if i > 1 else [0, i]), 1
         )
         print(f"{(i+1):04}.png : {seed}")
-        save_overviews(
+        work_save_overviews(
             overview, os.path.join(ngp_overview_folderpath, f"{(i+1):04}.png")
         )
         image = real_esrgan(image)
