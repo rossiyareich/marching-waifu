@@ -36,7 +36,7 @@ def load_controlnet_conditions(folderpath):
         controlnet_files = list(glob.iglob(os.path.join(folderpath, f"{prefix}*")))
         for i, filepath in enumerate(controlnet_files):
             pl = pathlib.Path(filepath)
-            if pl.stem in prefixes:
+            if pl.stem[:-4] in prefixes:
                 controlnet_conditions[i][j] = PIL.Image.open(filepath).convert("RGB")
 
     return controlnet_conditions
