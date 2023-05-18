@@ -24,7 +24,7 @@ class image_wrapper:
         return cv2.cvtColor(self.to_np(), cv2.COLOR_RGB2BGR)
 
     def resize(self, width, height):
-        self.img = self.img.resize((width, height), PIL.Image.Resampling.LANCZOS)
+        self.img = self.img.resize((width, height), PIL.Image.LANCZOS)
         return self
 
     def scale(self, scale):
