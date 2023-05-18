@@ -29,11 +29,11 @@ def load_controlnet_conditions(folderpath):
         "lineart",
     ]
 
-    num_controlnet_conditions = len(list(glob.iglob(os.path.join(folderpath, "*"))))
+    num_controlnet_conditions = len(glob.glob(os.path.join(folderpath, "*")))/4
     controlnet_conditions = [[None] * 4 for _ in range(num_controlnet_conditions)]
 
     for j, prefix in enumerate(prefixes):
-        controlnet_files = list(glob.iglob(os.path.join(folderpath, f"{prefix}*")))
+        controlnet_files = sorted(glob.glob(os.path.join(folderpath, f"{prefix}*")))
         for i, filepath in enumerate(controlnet_files):
             pl = pathlib.Path(filepath)
             if pl.stem[:-4] in prefixes:

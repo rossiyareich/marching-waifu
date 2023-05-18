@@ -46,7 +46,7 @@ class base_sd_workflow:
         )
 
     def load_textual_inversions(self, folderpath):
-        for filepath in glob.iglob(os.path.join(folderpath, "**")):
+        for filepath in sorted(glob.glob(os.path.join(folderpath, "*"))):
             pl = pathlib.Path(filepath)
             if pl.suffix in [".safetensors", ".ckpt", ".pt"]:
                 use_safetensors = pl.suffix == ".safetensors"
