@@ -7,6 +7,7 @@ import PIL.Image
 
 from src.utils.file_loader import *
 from src.utils.image_wrapper import *
+from src.utils.torch_utils_extended import *
 from src.workflows.controlnet_unet9_workflow import *
 from src.workflows.real_esrgan_workflow import *
 
@@ -17,6 +18,15 @@ textual_inversion_folderpath = "../data/embeddings/"
 controlnet_conditions_folderpath = "../data/multi_controlnet/multi_controlnet_data/"
 ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
+
+
+def work_save_overviews(overviews, filepath):
+    if overviews is not None:
+        overview_imgs = [image_wrapper(overview, "pil") for overview in overviews]
+        overview_img = overview_imgs[0]
+        for img in overview_imgs[1:]:
+            overview_img.concatenate(img)
+        overview_img.to_pil().save(filepath)
 
 
 def work_load_config():
@@ -56,13 +66,9 @@ def work_load_unet9():
     )
 
 
-def work_save_overviews(overviews, filepath):
-    if overviews is not None:
-        overview_imgs = [image_wrapper(overview, "pil") for overview in overviews]
-        overview_img = overview_imgs[0]
-        for img in overview_imgs[1:]:
-            overview_img.concatenate(img)
-        overview_img.to_pil().save(filepath)
+def work_load_real_esrgan():
+    global real_esrgan
+    real_esrgan = real_esrgan_workflow()
 
 
 def work_generate_inpaint(indices, gen_rel_index):
@@ -122,11 +128,6 @@ def work_generate_inpaint(indices, gen_rel_index):
         seed,
         [image_wrapper(img, "pil").crop(inpaint_region).to_pil() for img in overview],
     )
-
-
-def work_load_real_esrgan():
-    global real_esrgan
-    real_esrgan = real_esrgan_workflow()
 
 
 if __name__ == "__main__":

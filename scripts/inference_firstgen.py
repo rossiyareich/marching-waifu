@@ -19,6 +19,15 @@ ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
 
+def work_save_overviews(overviews, filepath):
+    if overviews is not None:
+        overview_imgs = [image_wrapper(overview, "pil") for overview in overviews]
+        overview_img = overview_imgs[0]
+        for img in overview_imgs[1:]:
+            overview_img.concatenate(img)
+        overview_img.to_pil().save(filepath)
+
+
 def work_load_config():
     global config
     config = load_config(config_filepath)
@@ -50,15 +59,6 @@ def work_load_unet4():
     )
 
 
-def work_save_overviews(overviews, filepath):
-    if overviews is not None:
-        overview_imgs = [image_wrapper(overview, "pil") for overview in overviews]
-        overview_img = overview_imgs[0]
-        for img in overview_imgs[1:]:
-            overview_img.concatenate(img)
-        overview_img.to_pil().save(filepath)
-
-
 def work_run_firstgen_prereq():
     global fg_prereq_image
     fg_prereq_image, seed, overviews = unet4(
@@ -80,6 +80,12 @@ def work_run_firstgen_prereq():
     fg_prereq_image.save(os.path.join(ngp_train_folderpath, "0001_prereq.png"))
 
 
+def work_load_deepdanbooru_prompts():
+    global prompt
+    with open(deepdanbooru_prompt_filepath, "r") as f:
+        prompt = f.read()
+
+
 def work_load_real_esrgan():
     global real_esrgan
     real_esrgan = real_esrgan_workflow()
@@ -89,12 +95,6 @@ def work_run_real_esrgan_prereq():
     global fg_prereq_image
     fg_prereq_image = real_esrgan(fg_prereq_image)
     fg_prereq_image.save(os.path.join(ngp_train_folderpath, "0001_prereq.png"))
-
-
-def work_load_deepdanbooru_prompts():
-    global prompt
-    with open(deepdanbooru_prompt_filepath, "r") as f:
-        prompt = f.read()
 
 
 def work_run_firstgen():
@@ -123,13 +123,12 @@ if __name__ == "__main__":
     work_load_prompt_additions()
     work_load_controlnet_conditions()
     work_load_unet4()
-    empty_cache()
     work_run_firstgen_prereq()
     empty_cache()
     subprocess.call(["python", "inference_deepdanbooru.py"])
+    work_load_deepdanbooru_prompts()
     work_load_real_esrgan()
     work_run_real_esrgan_prereq()
     empty_cache()
-    work_load_deepdanbooru_prompts()
     work_run_firstgen()
     empty_cache()
