@@ -50,7 +50,7 @@ class controlnet_unet4_workflow(base_sd_workflow):
 
         @torch.no_grad()
         def cache_interim(step, timestep, latents):
-            interim.append(self.pipe.numpy_to_pil(self.pipe.decode_latents(latents)))
+            interim.append(self.pipe.numpy_to_pil(self.pipe.decode_latents(latents))[0])
 
         image = self.pipe(
             prompt_embeds=prompt_embeds,
