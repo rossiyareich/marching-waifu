@@ -145,6 +145,9 @@ if __name__ == "__main__":
 
     work_load_deepdanbooru()
     work_run_deepdanbooru()
+
+    del deepdanbooru
+    empty_cache()
     
     work_load_unet4()
     work_run_firstgen()
