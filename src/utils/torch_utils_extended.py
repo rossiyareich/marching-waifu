@@ -12,10 +12,10 @@ def empty_cache():
 @torch.no_grad()
 def zeros_tensor(
     shape: Union[Tuple, List],
-    generator: Optional[Union[List["torch.Generator"], "torch.Generator"]] = None,
-    device: Optional["torch.device"] = None,
-    dtype: Optional["torch.dtype"] = None,
-    layout: Optional["torch.layout"] = None,
+    generator: Optional[Union[List[torch.Generator], torch.Generator]] = None,
+    device: Optional[torch.device] = None,
+    dtype: Optional[torch.dtype] = None,
+    layout: Optional[torch.layout] = None,
 ):
     rand_device = device
     batch_size = shape[0]

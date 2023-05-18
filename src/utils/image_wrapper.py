@@ -12,7 +12,7 @@ class image_wrapper:
         elif isinstance(img, cv2.Mat):
             self.img = PIL.Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         else:
-            raise TypeError()
+            raise TypeError(f"Unsupported type: {type(img)}")
 
     def to_pil(self):
         return self.img
@@ -21,7 +21,7 @@ class image_wrapper:
         return np.array(self.img)
 
     def to_cv2(self):
-        return cv2.cvtColor(np.array(self.img), cv2.COLOR_RGB2BGR)
+        return cv2.cvtColor(self.to_np(), cv2.COLOR_RGB2BGR)
 
     def resize(self, width, height):
         self.img = self.img.resize((width, height), PIL.Image.Resampling.LANCZOS)
@@ -34,17 +34,15 @@ class image_wrapper:
         width, height = self.img.width, self.img.height
 
         width, height = (
-            width if axis == 0 else width + other.img.width,
-            height if axis == 1 else height + other.img.height,
+            width + other.img.width if axis == 0 else width,
+            height + other.img.height if axis == 1 else height,
         )
+
+        other_pos = (width if axis == 0 else 0, height if axis == 1 else 0)
 
         new_image = PIL.Image.new(other.img.mode, (width, height))
         new_image.paste(self.img, (0, 0))
-
-        if axis == 0:
-            new_image.paste(other.img, (width, 0))
-        elif axis == 1:
-            new_image.paste(other.img, (0, height))
+        new_image.paste(other.img, other_pos)
 
         self.img = new_image
         return self

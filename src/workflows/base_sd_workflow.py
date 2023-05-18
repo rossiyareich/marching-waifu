@@ -48,15 +48,11 @@ class base_sd_workflow:
     def load_textual_inversions(self, folderpath):
         for filepath in glob.iglob(os.path.join(folderpath, "**")):
             pl = pathlib.Path(filepath)
-            if not os.path.isfile(filepath):
-                continue
-            if not pl.suffix in [".safetensors", ".ckpt", ".pt"]:
-                continue
-
-            use_safetensors = pl.suffix == ".safetensors"
-            self.pipe.load_textual_inversion(
-                filepath, token=pl.stem, use_safetensors=use_safetensors
-            )
+            if pl.suffix in [".safetensors", ".ckpt", ".pt"]:
+                use_safetensors = pl.suffix == ".safetensors"
+                self.pipe.load_textual_inversion(
+                    filepath, token=pl.stem, use_safetensors=use_safetensors
+                )
 
     def load_pipeline_optimizations(self, ops):
         if "xformers" in ops:

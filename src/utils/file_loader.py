@@ -29,21 +29,15 @@ def load_controlnet_conditions(folderpath):
         "lineart",
     ]
 
-    controlnet_conditions = [
-        [None] * 4 for _ in range(len(list(glob.iglob(os.path.join(folderpath, "**")))))
-    ]
+    num_controlnet_conditions = len(list(glob.iglob(os.path.join(folderpath, "**"))))
+    controlnet_conditions = [[None] * 4 for _ in range(num_controlnet_conditions)]
 
     for j, prefix in enumerate(prefixes):
         for i, filepath in enumerate(
-            glob.iglob(os.path.join(folderpath, f"{prefix}*"))
+            glob.iglob(os.path.join(folderpath, f"{prefix}*.png"))
         ):
             pl = pathlib.Path(filepath)
-            if not os.path.isfile(filepath):
-                continue
-            if not pl.suffix in [".png"]:
-                continue
-            if not pl.stem[:-4] in prefixes:
-                continue
-            controlnet_conditions[i][j] = PIL.Image.open(filepath).convert("RGB")
+            if pl.stem in prefixes:
+                controlnet_conditions[i][j] = PIL.Image.open(filepath).convert("RGB")
 
     return controlnet_conditions
