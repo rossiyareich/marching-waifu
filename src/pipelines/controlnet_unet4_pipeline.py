@@ -794,7 +794,7 @@ class StableDiffusionControlNetImg2ImgPipeline(
             latents = latents * self.scheduler.init_noise_sigma
             return latents
 
-        return get_noised_latents()
+        return get_noised_latents(image)
 
     def _default_height_width(self, height, width, image):
         if isinstance(image, list):
