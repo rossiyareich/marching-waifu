@@ -38,7 +38,10 @@ class image_wrapper:
             height + other.img.height if axis == 1 else height,
         )
 
-        other_pos = (width if axis == 0 else 0, height if axis == 1 else 0)
+        other_pos = (
+            self.img.width if axis == 0 else 0,
+            self.img.height if axis == 1 else 0,
+        )
 
         new_image = PIL.Image.new(other.img.mode, (width, height))
         new_image.paste(self.img, (0, 0))

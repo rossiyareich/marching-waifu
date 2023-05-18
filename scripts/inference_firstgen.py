@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 
 sys.path.append("..")
 
@@ -7,7 +8,6 @@ from src.utils.file_loader import *
 from src.utils.image_wrapper import *
 from src.utils.torch_utils_extended import *
 from src.workflows.controlnet_unet4_workflow import *
-from src.workflows.deepdanbooru_workflow import *
 from src.workflows.real_esrgan_workflow import *
 
 config_filepath = "inference.json"
@@ -15,7 +15,6 @@ prompt_addition_filepath = "../data/prompts/prompt_additions.json"
 deepdanbooru_prompt_filepath = "../data/prompts/deepdanbooru_prompt.txt"
 textual_inversion_folderpath = "../data/embeddings/"
 controlnet_conditions_folderpath = "../data/multi_controlnet/multi_controlnet_data/"
-deepdanbooru_project_folderpath = "../ext/AnimeFaceNotebooks/deepdanbooru_model/"
 ngp_overview_folderpath = "../data/ngp/overview/"
 ngp_train_folderpath = "../data/ngp/train/"
 
@@ -86,28 +85,16 @@ def work_load_real_esrgan():
     real_esrgan = real_esrgan_workflow()
 
 
-def work_run_real_esrgan():
+def work_run_real_esrgan_prereq():
     global fg_prereq_image
     fg_prereq_image = real_esrgan(fg_prereq_image)
     fg_prereq_image.save(os.path.join(ngp_train_folderpath, "0001_prereq.png"))
 
 
-def work_load_deepdanbooru():
-    global deepdanbooru
-    deepdanbooru = deepdanbooru_workflow(deepdanbooru_project_folderpath)
-
-
-def work_run_deepdanbooru():
+def work_load_deepdanbooru_prompts():
     global prompt
-    deepdanbooru(
-        os.path.join(ngp_train_folderpath, "0001_prereq.png"),
-        config["deepdanbooru"]["threshold"],
-    )
-    prompt = deepdanbooru.load_prompts(
-        config["deepdanbooru"]["multiplier"], config["deepdanbooru"]["prefix"]
-    )
-    with open(deepdanbooru_prompt_filepath, "w") as f:
-        f.write(prompt)
+    with open(deepdanbooru_prompt_filepath, "r") as f:
+        prompt = f.read()
 
 
 def work_run_firstgen():
@@ -137,17 +124,8 @@ if __name__ == "__main__":
     work_load_controlnet_conditions()
     work_load_unet4()
     work_run_firstgen_prereq()
+    subprocess.call(["python", "inference_deepdanbooru.py"])
     work_load_real_esrgan()
-    work_run_real_esrgan()
-
-    del unet4
-    empty_cache()
-
-    work_load_deepdanbooru()
-    work_run_deepdanbooru()
-
-    del deepdanbooru
-    empty_cache()
-    
-    work_load_unet4()
+    work_run_real_esrgan_prereq()
+    work_load_deepdanbooru_prompts()
     work_run_firstgen()

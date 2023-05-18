@@ -29,7 +29,7 @@ def load_controlnet_conditions(folderpath):
         "lineart",
     ]
 
-    num_controlnet_conditions = len(glob.glob(os.path.join(folderpath, "*")))/4
+    num_controlnet_conditions = len(glob.glob(os.path.join(folderpath, "*"))) // 4
     controlnet_conditions = [[None] * 4 for _ in range(num_controlnet_conditions)]
 
     for j, prefix in enumerate(prefixes):
