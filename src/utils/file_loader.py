@@ -34,7 +34,7 @@ def load_controlnet_conditions(folderpath):
 
     for j, prefix in enumerate(prefixes):
         for i, filepath in enumerate(
-            glob.iglob(os.path.join(folderpath, f"{prefix}*.png"))
+            glob.iglob(os.path.join(folderpath, f"{prefix}**"))
         ):
             pl = pathlib.Path(filepath)
             if pl.stem in prefixes:
