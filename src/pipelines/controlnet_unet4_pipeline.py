@@ -995,10 +995,7 @@ class StableDiffusionControlNetImg2ImgPipeline(
             negative_prompt_embeds=negative_prompt_embeds,
         )
 
-        # 4. Prepare image, and controlnet_conditioning_image
-        if image is not None:
-            image = prepare_image(image)
-
+        # 4. Prepare controlnet_conditioning_image
         # condition image(s)
         if isinstance(self.controlnet, ControlNetModel):
             controlnet_conditioning_image = prepare_controlnet_conditioning_image(

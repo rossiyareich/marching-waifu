@@ -1186,6 +1186,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
         )
 
         # 4. Prepare mask, image, and controlnet_conditioning_image
+        original_image = image.copy()
         image = prepare_image(image)
 
         mask_image = prepare_mask_image(mask_image)
@@ -1212,7 +1213,7 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
         # 6. Prepare latent variables
         num_channels_latents = self.vae.config.latent_channels
         latents = self.prepare_latents(
-            image,
+            original_image,
             latent_timestep,
             batch_size,
             num_images_per_prompt,
