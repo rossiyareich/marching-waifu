@@ -19,7 +19,6 @@ class base_sd_workflow:
 
     def load_vae(self, repo_id):
         self.vae = AutoencoderKL.from_pretrained(repo_id, torch_dtype=torch.float16)
-        self.vae = self.vae.to("cuda")
 
     def load_image_processor(self):
         vae_scale_factor = 2 ** (len(self.vae.config.block_out_channels) - 1)
@@ -34,9 +33,7 @@ class base_sd_workflow:
         ]
 
         self.controlnet = [
-            ControlNetModel.from_pretrained(repo_id, torch_dtype=torch.float16).to(
-                "cuda"
-            )
+            ControlNetModel.from_pretrained(repo_id, torch_dtype=torch.float16)
             for repo_id in repo_ids
         ]
 

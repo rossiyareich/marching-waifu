@@ -15,7 +15,7 @@
     },
     "ops": [
         "xformers",
-        "cuda"
+        "model_offload"
     ],
     "deepdanbooru": {
         "threshold": 0.08,
