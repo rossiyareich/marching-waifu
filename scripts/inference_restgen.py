@@ -76,10 +76,12 @@ def work_generate_inpaint(indices, gen_rel_index):
         image_wrapper(
             PIL.Image.open(
                 os.path.join(ngp_train_folderpath, f"{(i+1):04}.png")
+                if k != gen_rel_index
+                else os.path.join(ngp_train_folderpath, f"{i:04}.png")
             ).convert("RGB"),
             "pil",
         ).scale(1.0 / 4.0)
-        for i in indices
+        for k, i in enumerate(indices)
     ]
     stitched_image = image_set[0]
     for image in image_set[1:]:
