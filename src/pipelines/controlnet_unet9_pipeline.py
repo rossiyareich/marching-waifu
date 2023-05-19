@@ -1192,6 +1192,8 @@ class StableDiffusionControlNetInpaintImg2ImgPipeline(
             height, width, controlnet_conditioning_image
         )
 
+        if callback_steps == 0: callback_steps = 1
+
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
             prompt,
