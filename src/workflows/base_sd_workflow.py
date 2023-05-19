@@ -8,6 +8,7 @@ from diffusers import AutoencoderKL, ControlNetModel, DPMSolverMultistepSchedule
 from diffusers.image_processor import VaeImageProcessor
 
 
+@torch.no_grad()
 class base_sd_workflow:
     def __init__(self):
         self.vae = None

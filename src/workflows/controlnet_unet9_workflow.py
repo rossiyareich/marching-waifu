@@ -5,6 +5,7 @@ from src.utils.torch_utils_extended import *
 from src.workflows.base_sd_workflow import *
 
 
+@torch.no_grad()
 class controlnet_unet9_workflow(base_sd_workflow):
     def __init__(self, vae_repo_id, ldm_repo_id, textual_inversion_folderpath, ops):
         super().__init__()

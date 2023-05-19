@@ -1,5 +1,6 @@
 import os
 
+import torch
 from basicsr.archs.rrdbnet_arch import RRDBNet
 from basicsr.utils.download_util import load_file_from_url
 from realesrgan import RealESRGANer
@@ -7,6 +8,7 @@ from realesrgan import RealESRGANer
 from src.utils.image_wrapper import *
 
 
+@torch.no_grad()
 class real_esrgan_workflow:
     def __init__(
         self,
