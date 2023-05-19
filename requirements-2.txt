@@ -1,0 +1,11 @@
+accelerate 
+diffusers
+transformers 
+xformers
+opencv-contrib-python 
+safetensors
+controlnet_aux 
+huggingface_hub 
+omegaconf 
+compel
+gdown
