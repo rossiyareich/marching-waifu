@@ -207,6 +207,7 @@ def prepare_controlnet_conditioning_image(
     num_images_per_prompt,
     device,
     dtype,
+    do_classifier_free_guidance,
 ):
     if not isinstance(controlnet_conditioning_image, torch.Tensor):
         if isinstance(controlnet_conditioning_image, PIL.Image.Image):
@@ -251,6 +252,9 @@ def prepare_controlnet_conditioning_image(
     controlnet_conditioning_image = controlnet_conditioning_image.to(
         device=device, dtype=dtype
     )
+
+    if do_classifier_free_guidance:
+        controlnet_conditioning_image = torch.cat([controlnet_conditioning_image] * 2)
 
     return controlnet_conditioning_image
 
