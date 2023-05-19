@@ -8,7 +8,6 @@ from diffusers import AutoencoderKL, ControlNetModel, DPMSolverMultistepSchedule
 from diffusers.image_processor import VaeImageProcessor
 
 
-@torch.no_grad()
 class base_sd_workflow:
     def __init__(self):
         self.vae = None
@@ -18,13 +17,16 @@ class base_sd_workflow:
         self.pipe = None
         self.generator = None
 
+    @torch.no_grad()
     def load_vae(self, repo_id):
         self.vae = AutoencoderKL.from_pretrained(repo_id, torch_dtype=torch.float16)
 
+    @torch.no_grad()
     def load_image_processor(self):
         vae_scale_factor = 2 ** (len(self.vae.config.block_out_channels) - 1)
         self.image_processor = VaeImageProcessor(vae_scale_factor=vae_scale_factor)
 
+    @torch.no_grad()
     def load_controlnet(self):
         repo_ids = [
             "lllyasviel/control_v11p_sd15_openpose",
@@ -38,11 +40,13 @@ class base_sd_workflow:
             for repo_id in repo_ids
         ]
 
+    @torch.no_grad()
     def load_scheduler(self):
         self.scheduler = DPMSolverMultistepScheduler.from_config(
             self.pipe.scheduler.config, use_karras_sigmas=True
         )
 
+    @torch.no_grad()
     def load_textual_inversions(self, folderpath):
         for filepath in sorted(glob.glob(os.path.join(folderpath, "*"))):
             pl = pathlib.Path(filepath)
@@ -52,6 +56,7 @@ class base_sd_workflow:
                     filepath, token=pl.stem, use_safetensors=use_safetensors
                 )
 
+    @torch.no_grad()
     def load_pipeline_optimizations(self, ops):
         if "xformers" in ops:
             self.pipe.enable_xformers_memory_efficient_attention()
@@ -64,6 +69,7 @@ class base_sd_workflow:
         elif "cuda" in ops:
             self.pipe.to("cuda")
 
+    @torch.no_grad()
     def load_generator(self, seed):
         self.generator = torch.Generator(device="cpu")
         if seed == -1:
@@ -73,6 +79,7 @@ class base_sd_workflow:
 
         return seed
 
+    @torch.no_grad()
     def load_weighted_embeds(self, prompt, negative_prompt):
         compel = Compel(
             tokenizer=self.pipe.tokenizer,

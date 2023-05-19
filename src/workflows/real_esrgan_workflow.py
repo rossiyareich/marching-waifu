@@ -8,8 +8,8 @@ from realesrgan import RealESRGANer
 from src.utils.image_wrapper import *
 
 
-@torch.no_grad()
 class real_esrgan_workflow:
+    @torch.no_grad()
     def __init__(
         self,
         outscale=4.0,
@@ -72,6 +72,7 @@ class real_esrgan_workflow:
                 bg_upsampler=self.upsampler,
             )
 
+    @torch.no_grad()
     def __call__(self, source_img):
         source_img = image_wrapper(source_img, "pil").to_cv2()
 
