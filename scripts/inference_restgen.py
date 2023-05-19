@@ -140,7 +140,7 @@ if __name__ == "__main__":
     work_load_real_esrgan()
     empty_cache()
 
-    for i in range(1, config["pipeline"]["restgen"]["data_size"]):
+    for i in range(1, config["pipeline"]["restgen"]["dataset_size"]):
         image, seed, overview = work_generate_inpaint(
             ([i - 1, i, 0] if i > 1 else [0, i]), 1
         )
