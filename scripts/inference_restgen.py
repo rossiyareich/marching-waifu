@@ -126,9 +126,9 @@ def work_generate_inpaint(indices, gen_rel_index):
     )
 
     return (
-        image_wrapper(image, "pil").crop(inpaint_region).to_pil(),
+        image_wrapper(image, "pil").to_pil().crop(inpaint_region),
         seed,
-        [image_wrapper(img, "pil").crop(inpaint_region).to_pil() for img in overview],
+        [image_wrapper(img, "pil").to_pil().crop(inpaint_region) for img in overview],
     )
 
 
