@@ -57,7 +57,11 @@ class base_sd_workflow:
     def load_pipeline_optimizations(self, ops):
         if "xformers" in ops:
             self.pipe.enable_xformers_memory_efficient_attention()
-        if "cpu_offload" in ops:
+
+        if "vae_tiling" in ops:
+            self.pipe.enable_vae_tiling()
+
+        if "model_offload" in ops:
             self.pipe.enable_model_cpu_offload()
         elif "cuda" in ops:
             self.pipe.to("cuda")

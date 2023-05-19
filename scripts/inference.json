@@ -15,7 +15,8 @@
     },
     "ops": [
         "xformers",
-        "cuda"
+        "vae_tiling",
+        "model_offload"
     ],
     "deepdanbooru": {
         "threshold": 0.08,
