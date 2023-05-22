@@ -1,6 +1,7 @@
 #! /bin/bash
 
 # Setup conda env
+eval "$(conda shell.bash hook)"
 conda create -n marching-waifu python=3.10
 conda activate marching-waifu
 pip install --upgrade pip
