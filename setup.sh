@@ -12,13 +12,18 @@ sudo apt install build-essential
 sudo apt install nvidia-cuda-toolkit
 sudo apt install unzip
 
+# Reboot
+echo ". ~/miniconda3/etc/profile.d/conda.sh" >> ~/.bashrc
+sudo reboot now
+
 # Setup conda env
 conda create -n marching-waifu python=3.10
 conda activate marching-waifu
 pip install --upgrade pip
 
 # Install Jupyter, Pandas, Numpy, gdown, Pillow, IPython
-conda install jupyter pandas numpy gdown Pillow ipython
+conda install jupyter pandas numpy Pillow ipython
+conda install -c conda-forge gdown
 
 # Install CUDAToolkit, CUDNN
 conda install -c conda-forge cudatoolkit=11.8.0
