@@ -6,8 +6,7 @@ conda activate marching-waifu
 pip install --upgrade pip
 
 # Install Jupyter, Pandas, Numpy, gdown, Pillow, IPython
-conda install jupyter pandas numpy Pillow ipython
-conda install -c conda-forge gdown
+pip install jupyter pandas numpy Pillow ipython gdown
 
 # Install CUDAToolkit, CUDNN
 conda install -c conda-forge cudatoolkit=11.8.0
@@ -30,7 +29,7 @@ cp $CONDA_PREFIX/lib/libdevice.10.bc $CONDA_PREFIX/lib/nvvm/libdevice/
 pip install tensorflow==2.12.*
 python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
 python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-conda install -c conda-forge keras
+pip install keras
 
 # Install PyTorch
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
