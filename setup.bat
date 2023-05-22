@@ -1,9 +1,9 @@
 :: Make sure conda installed and conda init is ran
-:: Make sure to have CUDA Toolkit installed
+:: Make sure to have CUDA 11.8 toolkit, cuDNN>=8.9.0 installed
 
 :: Setup conda env
 conda create -n marching-waifu python=3.10
-conda activate marching-waifu
+call conda activate marching-waifu
 pip install --upgrade pip
 
 :: Install Jupyter, Pandas, Numpy, Pillow, IPython, gdown
