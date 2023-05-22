@@ -6,7 +6,7 @@ import PIL.Image
 class image_wrapper:
     def __init__(self, img, format):
         if format == "pil":
-            self.img = img.copy()
+            self.img = img
         elif format == "np":
             self.img = PIL.Image.fromarray(img)
         elif format == "cv2":
@@ -32,20 +32,20 @@ class image_wrapper:
 
     def concatenate(self, other, axis=0):
         width, height = self.img.width, self.img.height
-
         width, height = (
             width + other.img.width if axis == 0 else width,
             height + other.img.height if axis == 1 else height,
         )
 
-        other_pos = (
-            self.img.width if axis == 0 else 0,
-            self.img.height if axis == 1 else 0,
-        )
-
         new_image = PIL.Image.new(other.img.mode, (width, height))
         new_image.paste(self.img, (0, 0))
-        new_image.paste(other.img, other_pos)
+        new_image.paste(
+            other.img,
+            (
+                self.img.width if axis == 0 else 0,
+                self.img.height if axis == 1 else 0,
+            ),
+        )
 
         self.img = new_image
         return self

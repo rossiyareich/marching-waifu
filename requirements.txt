@@ -1,0 +1,10 @@
+accelerate 
+diffusers["torch"]
+transformers
+xformers
+compel
+opencv-contrib-python 
+controlnet_aux 
+omegaconf
+safetensors
+huggingface_hub 

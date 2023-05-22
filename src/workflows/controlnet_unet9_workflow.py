@@ -1,37 +1,24 @@
 import torch
 
 from src.pipelines.controlnet_unet9_pipeline import *
-from src.utils.torch_utils_extended import *
-from src.workflows.base_sd_workflow import *
+from src.workflows.controlnet_base_workflow import *
 
 
-class controlnet_unet9_workflow(base_sd_workflow):
-    def __init__(self, vae_repo_id, ldm_repo_id, textual_inversion_folderpath, ops):
-        super().__init__()
-
-        self.load_vae(vae_repo_id)
-        self.load_image_processor()
-        self.load_controlnet()
-
-        self.pipe = StableDiffusionControlNetInpaintImg2ImgPipeline.from_pretrained(
+class controlnet_unet9_workflow(controlnet_base_workflow):
+    @torch.no_grad()
+    def __init__(self, vae_repo_id, ldm_repo_id, textual_inversion_folderpath):
+        super().__init__(
+            vae_repo_id,
             ldm_repo_id,
-            vae=self.vae,
-            controlnet=self.controlnet,
-            torch_dtype=torch.float16,
-            safety_checker=None,
-            requires_safety_checker=False,
+            controlnet_unet9_pipeline,
+            textual_inversion_folderpath,
         )
 
-        self.load_scheduler()
-        self.load_textual_inversions(textual_inversion_folderpath)
-        self.load_pipeline_optimizations(ops)
-
+    @torch.no_grad()
     def __call__(
         self,
         prompt,
         negative_prompt,
-        image,
-        mask_image,
         steps,
         cfg_scale,
         denoising_strength,
@@ -39,38 +26,36 @@ class controlnet_unet9_workflow(base_sd_workflow):
         callback_steps,
         controlnet_conditions,
         controlnet_scales,
+        controlnet_guidance_start,
+        controlnet_guidance_end,
         controlnet_soft_exp,
+        image,
+        mask_image,
         fill_mode,
     ):
         seed = self.load_generator(seed)
-
-        prompt_embeds, negative_prompt_embeds = self.load_weighted_embeds(
-            prompt, negative_prompt
-        )
+        self.load_weighted_embeds(prompt, negative_prompt)
 
         interim = []
-
-        @torch.no_grad()
-        def cache_interim(step, timestep, latents):
-            interim.append(self.pipe.numpy_to_pil(self.pipe.decode_latents(latents)))
-
         image = self.pipe(
-            prompt_embeds=prompt_embeds,
-            negative_prompt_embeds=negative_prompt_embeds,
             image=image,
             mask_image=mask_image,
+            controlnet_conditioning_image=controlnet_conditions,
+            strength=denoising_strength,
             num_inference_steps=steps,
             guidance_scale=cfg_scale,
-            strength=denoising_strength,
             generator=self.generator,
-            callback=(cache_interim if callback_steps != 0 else None),
+            prompt_embeds=self.weighted_embeds[0],
+            negative_prompt_embeds=self.weighted_embeds[1],
+            callback=None
+            if callback_steps == 0
+            else (lambda i, t, img: interim.append(img)),
             callback_steps=callback_steps,
-            controlnet_conditioning_image=controlnet_conditions,
             controlnet_conditioning_scale=controlnet_scales,
+            controlnet_guidance_start=controlnet_guidance_start,
+            controlnet_guidance_end=controlnet_guidance_end,
             controlnet_soft_exp=controlnet_soft_exp,
             fill_mode=fill_mode,
-        ).images[0]
-
-        empty_cache()
+        )[0]
 
         return (image, seed, interim)

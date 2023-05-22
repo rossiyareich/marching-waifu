@@ -1,9 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "ext/AnimeFaceNotebooks/DeepDanbooru"
-    ],
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
-    "python.formatting.provider": "none"
-}

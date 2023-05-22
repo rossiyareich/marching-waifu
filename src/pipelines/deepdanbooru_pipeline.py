@@ -5,12 +5,9 @@ import numpy as np
 import tensorflow as tf
 
 
-class deepdanbooru_workflow:
+class deepdanbooru_pipeline:
     def __init__(self, projectpath):
-        self.sorted_results = None
-
-        gpus = tf.config.list_physical_devices("GPU")
-        for gpu in gpus:
+        for gpu in tf.config.list_physical_devices("GPU"):
             tf.config.experimental.set_memory_growth(gpu, True)
 
         self.classif_model = dd.project.load_model_from_project(projectpath)
@@ -19,32 +16,29 @@ class deepdanbooru_workflow:
         self.model_height = self.classif_model.input_shape[1]
         self.all_tags = np.array(self.all_tags)
 
-    def load_prompts(self, multiplier, prefix):
-        prompt = prefix
-        for tag, prob in self.sorted_results.items():
-            tag_strength = prob * multiplier
-            prompt += f"({tag}){tag_strength}, "
-        prompt = prompt[:-1]
-
-        return prompt
-
-    def __call__(self, imagepath, threshold):
+    def __call__(self, imagepath, threshold, multiplier, prefix):
         image = dd.data.load_image_for_evaluate(
             imagepath, width=self.model_width, height=self.model_height
         )
         image = np.array([image])
 
-        # Decode
         result = self.classif_model.predict(image).reshape(-1, self.all_tags.shape[0])[
             0
         ]
 
-        # Threshold and sort
         result_tags = {}
         for i in range(len(self.all_tags)):
             if result[i] > threshold:
                 result_tags[self.all_tags[i]] = result[i]
         sorted_tags = reversed(sorted(result_tags.keys(), key=lambda x: result_tags[x]))
-        self.sorted_results = collections.OrderedDict()
+        sorted_results = collections.OrderedDict()
         for tag in sorted_tags:
-            self.sorted_results[tag] = result_tags[tag]
+            sorted_results[tag] = result_tags[tag]
+
+        prompt = prefix
+        for tag, prob in sorted_results.items():
+            tag_strength = prob * multiplier
+            prompt += f"({tag}){tag_strength}, "
+        prompt = prompt[:-1]
+
+        return prompt
