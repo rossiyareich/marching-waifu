@@ -1,5 +1,5 @@
 accelerate 
-diffusers["torch"]
+diffusers
 transformers
 xformers
 compel
