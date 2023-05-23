@@ -677,7 +677,7 @@ class controlnet_unet9_pipeline(
                 ):
                     progress_bar.update()
                     if callback is not None and i % callback_steps == 0:
-                        callback(i, t, latents)
+                        callback(i, t, self.numpy_to_pil(self._decode_latents(latents)))
 
         if hasattr(self, "final_offload_hook") and self.final_offload_hook is not None:
             self.unet.to("cpu")
