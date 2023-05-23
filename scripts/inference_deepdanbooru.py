@@ -7,7 +7,7 @@ sys.path.append("..")
 
 import torch
 
-from pipelines.deepdanbooru_pipeline import *
+from src.pipelines.deepdanbooru_pipeline import *
 from src.utils.file_loader import *
 
 path = {

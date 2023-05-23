@@ -6,7 +6,7 @@ sys.path.append("..")
 
 import torch
 
-from pipelines.realesrgan_pipeline import *
+from src.pipelines.realesrgan_pipeline import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

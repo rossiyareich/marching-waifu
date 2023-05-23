@@ -101,7 +101,7 @@ if __name__ == "__main__":
         config["pipeline"]["firstgen"]["steps"],
         config["pipeline"]["firstgen"]["cfg_scale"],
         config["pipeline"]["firstgen"]["img2img_denoising_strength"],
-        config["pipeline"]["firstgen"]["img2img_seed"],
+        config["pipeline"]["firstgen"]["img2img_denoising_seed"],
         config["pipeline"]["firstgen"]["callback_steps"],
         controlnet_conditions[0],
         controlnet_scales,
