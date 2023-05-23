@@ -12,21 +12,20 @@ git submodule update --init --recursive
 
 # Setup prerequisites
 sudo apt update
-sudo apt install build-essential cmake unzip
 
 # Setup latest NVIDIA drivers
 sudo apt remove --purge nvidia-*
 sudo apt autoremove --purge
-sudo apt install nvidia-driver-525
 
 # Setup cuda-toolkit 11.8
 cd ~
+sudo apt install build-essential cmake unzip
 wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
 sudo sh cuda_11.8.0_520.61.05_linux.run
 echo 'export PATH="/usr/local/cuda/bin:$PATH"' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"' >> ~/.bashrc
 source ~/.bashrc
-sudo bash -c “echo /usr/local/cuda/lib64 > /etc/ld.so.conf”
+sudo nano /etc/ld.so.conf # Append /usr/local/cuda/lib64 to the file here!
 sudo ldconfig
 cd ~
 rm -rf cuda_11.8.0_520.61.05_linux.run
