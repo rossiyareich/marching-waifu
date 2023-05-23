@@ -41,8 +41,8 @@ if __name__ == "__main__":
     fl = file_loader()
     config = fl.load_json(path["config_file"])
     prompt_additions = [
-        j["prompt_addition"]["direction"]
-        for j in fl.load_json(path["prompt_additions_file"])
+        j["direction"]
+        for j in fl.load_json(path["prompt_additions_file"])["prompt_addition"]
     ]
 
     controlnet_conditions = fl.load_controlnet_conditions(

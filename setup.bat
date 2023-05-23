@@ -16,8 +16,8 @@ conda create -n marching-waifu python=3.10
 call activate marching-waifu
 pip install --upgrade pip
 
-:: Install gdown
-pip install gdown
+:: Install 3rd party packages
+pip install gdown ipykernel ipywidgets
 
 :: Install Tensorflow, Keras
 pip install tensorflow-directml-plugin

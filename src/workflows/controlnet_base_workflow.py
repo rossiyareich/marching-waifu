@@ -58,7 +58,6 @@ class controlnet_base_workflow:
             self.pipe.tokenizer,
             self.pipe.text_encoder,
             truncate_long_prompts=False,
-            dtype_for_device_getter=torch.float16,
         )
 
         conditioning = compel.build_conditioning_tensor(prompt)
