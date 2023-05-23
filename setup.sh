@@ -13,7 +13,7 @@ git submodule update --init --recursive
 # Setup prerequisites
 sudo apt update
 
-# Setup latest NVIDIA drivers
+# Remove old NVIDIA components
 sudo apt remove --purge nvidia-*
 sudo apt autoremove --purge
 
@@ -27,7 +27,6 @@ echo 'export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"' >> ~/.bas
 source ~/.bashrc
 sudo nano /etc/ld.so.conf # Append /usr/local/cuda/lib64 to the file here!
 sudo ldconfig
-cd ~
 rm -rf cuda_11.8.0_520.61.05_linux.run
 
 # Setup cuDNN 8.9.1
@@ -69,6 +68,7 @@ pip install keras
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 # Download pretrained DeepDanbooru weights
+cd marching-waifu/
 mkdir ext/weights/
 cd ext/weights/
 wget https://github.com/KichangKim/DeepDanbooru/releases/download/v3-20211112-sgd-e28/deepdanbooru-v3-20211112-sgd-e28.zip
