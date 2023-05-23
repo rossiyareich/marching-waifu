@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     unet9 = controlnet_unet9_workflow(
         config["models"]["vae_repo_id"],
-        config["models"]["ldm_repo_id"],
+        config["models"]["ldm_inpaint_repo_id"],
         path["textual_inversion_folder"],
     )
 
