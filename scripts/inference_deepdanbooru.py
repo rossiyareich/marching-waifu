@@ -25,7 +25,7 @@ if __name__ == "__main__":
     config = fl.load_json(path["config_file"])
     deepdanbooru = deepdanbooru_pipeline(path["dd_project_folder"])
 
-    with open(parser.out_path, "w") as f:
+    with open(args.out_path, "w") as f:
         f.write(
             deepdanbooru(
                 args.in_path,
