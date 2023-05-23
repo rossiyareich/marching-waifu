@@ -3,4 +3,3 @@ data/models/Nabylon-v1.0-fp16-inpainting
 data/models/models.tar.gz
 data/multi_controlnet/multi_controlnet_raw
 data/multi_controlnet/dataset.zip
-ext/weights
