@@ -36,18 +36,86 @@ def process_results(image, seed, interim, filename):
         interim_img.to_pil().save(os.path.join(path["ngp_overview_folder"], filename))
 
 
-def generate_mask(width, height, length, index):
-    mask = PIL.Image.new("1", (width, height))
-    mask.paste(
-        True,
-        (int(index / length * width), 0, int((index + 1) / length * width), height),
+# RestGen loop:
+#   Construct parameters
+#   Generate new image
+#   Crop, save, upscale new image
+def restgen_loop(
+    image_filename,
+    mask_relindex,
+    controlnet_indices,
+    unet9,
+    prompt,
+    prompt_additions,
+    config,
+    controlnet_conditions,
+    controlnet_scales,
+):
+    # Construct stitched image
+    images = [
+        image_wrapper(PIL.Image.open(f), "pil").scale(0.25) for f in image_filename
+    ]
+    for image in images[1:]:
+        images[0].concatenate(image)
+    images = images[0].to_pil()
+
+    # Calculate crop area
+    crop_area = (
+        mask_relindex * (image.width / len(images)),
+        0,
+        (mask_relindex + 1) * (image.width / len(images)),
+        image.height,
     )
 
-    return mask
+    # Construct mask image
+    mask = PIL.Image.new("1", (image.width, image.height))
+    mask.paste(True, crop_area)
+
+    # Construct ControlNet images
+    controlnet_images = [
+        [
+            image_wrapper(condition.copy(), "pil")
+            for condition in controlnet_conditions[i]
+        ]
+        for i in controlnet_indices
+    ]
+    for controlnet_image in controlnet_images[1:]:
+        for i, condition in enumerate(controlnet_image):
+            controlnet_images[0][i].concatenate(condition)
+    controlnet_images = [condition.to_pil() for condition in controlnet_images[0]]
+
+    # Get absolute index
+    absolute = controlnet_indices[mask_relindex]
+
+    # Generate, crop, save new image
+    image, seed, interim = unet9(
+        prompt.format(prompt_additions[absolute]),
+        config["pipeline"]["restgen"]["negative_prompt"],
+        config["pipeline"]["restgen"]["steps"],
+        config["pipeline"]["restgen"]["cfg_scale"],
+        config["pipeline"]["restgen"]["denoising_strength"],
+        config["pipeline"]["restgen"]["seed"],
+        config["pipeline"]["restgen"]["callback_steps"],
+        controlnet_images,
+        controlnet_scales,
+        config["controlnet"]["guidance"]["start"],
+        config["controlnet"]["guidance"]["end"],
+        config["controlnet"]["soft_exp"],
+        images,
+        mask,
+        config["pipeline"]["restgen"]["inpaint_method"],
+    )
+    image = image.crop(crop_area)
+    filename = f"{(absolute+1):04}.png"
+    filepath = os.path.join(path["ngp_train_folder"], filename)
+    process_results(image, seed, interim, filename)
+
+    # Upscale new image
+    subprocess.call(["python", "inference_realesrgan.py", filepath, filepath])
 
 
 if __name__ == "__main__":
-    # 0. Prepare all pipeline stages
+    # Prepare all pipeline stages
     fl = file_loader()
     config = fl.load_json(path["config_file"])
     prompt_additions = [
@@ -73,101 +141,42 @@ if __name__ == "__main__":
         path["textual_inversion_folder"],
     )
 
-    # 1. Downscale first image
-    filename = "0001.png"
-    filepath = os.path.join(path["ngp_train_folder"], filename)
-    downscaled_firstgen = image_wrapper(PIL.Image.open(filepath), "pil").scale(0.25)
-
-    # 2. Generate second image
-    downscaled = image_wrapper(downscaled_firstgen.to_pil().copy(), "pil")
-    downscaled = downscaled.concatenate(downscaled_firstgen).to_pil()
-
-    mask = generate_mask(downscaled.width, downscaled.height, 2, 1)
-
-    controlnet_conditions_ = [
-        image_wrapper(controlnet_condition_.copy(), "pil")
-        for controlnet_condition_ in controlnet_conditions[0]
-    ]
-    for k, controlnet_condition_ in enumerate(controlnet_conditions[1]):
-        controlnet_conditions_[k].concatenate(
-            image_wrapper(controlnet_condition_, "pil")
-        )
-    controlnet_conditions_ = [
-        controlnet_condition_.to_pil()
-        for controlnet_condition_ in controlnet_conditions_
-    ]
-
-    image, seed, interim = unet9(
-        prompt.format(prompt_additions[1]),
-        config["pipeline"]["restgen"]["negative_prompt"],
-        config["pipeline"]["restgen"]["steps"],
-        config["pipeline"]["restgen"]["cfg_scale"],
-        config["pipeline"]["restgen"]["denoising_strength"],
-        config["pipeline"]["restgen"]["seed"],
-        config["pipeline"]["restgen"]["callback_steps"],
-        controlnet_conditions_,
+    # Generate mirror of first image
+    restgen_loop(
+        ["prereq.png", "prereq.png"],
+        1,
+        [0, 0],
+        unet9,
+        prompt,
+        prompt_additions,
+        config,
+        controlnet_conditions,
         controlnet_scales,
-        config["controlnet"]["guidance"]["start"],
-        config["controlnet"]["guidance"]["end"],
-        config["controlnet"]["soft_exp"],
-        downscaled,
-        mask,
-        config["pipeline"]["restgen"]["inpaint_method"],
     )
-    filename = "0002.png"
-    filepath = os.path.join(path["ngp_train_folder"], filename)
-    process_results(image, seed, interim, filename)
 
-    # 3. Upscale second image
-    subprocess.call(["python", "inference_realesrgan.py", filepath, filepath])
+    # Generate second image
+    restgen_loop(
+        ["0001.png", "0001.png"],
+        1,
+        [0, 1],
+        unet9,
+        prompt,
+        prompt_additions,
+        config,
+        controlnet_conditions,
+        controlnet_scales,
+    )
 
-    # 4. Run restgen loop:
-    #       Downscale previous image
-    #       Generate current image
-    #       Upscale current image
-    for i in range(2, config["pipeline"]["restgen"]["dataset_size"]):
-        filename = f"{i:04}.png"
-        filepath = os.path.join(path["ngp_train_folder"], filename)
-        downscaled = image_wrapper(PIL.Image.open(filepath), "pil").scale(0.25)
-        downscaled = (
-            downscaled.concatenate(downscaled).concatenate(downscaled_firstgen).to_pil()
-        )
-
-        mask = generate_mask(downscaled.width, downscaled.height, 3, 1)
-
-        controlnet_conditions_ = [
-            image_wrapper(controlnet_condition_.copy(), "pil")
-            for controlnet_condition_ in controlnet_conditions[i - 1]
-        ]
-        for j in [i, 0]:
-            for k, controlnet_condition_ in enumerate(controlnet_conditions[j]):
-                controlnet_conditions_[k].concatenate(
-                    image_wrapper(controlnet_condition_, "pil")
-                )
-        controlnet_conditions_ = [
-            controlnet_condition_.to_pil()
-            for controlnet_condition_ in controlnet_conditions_
-        ]
-
-        image, seed, interim = unet9(
-            prompt.format(prompt_additions[i]),
-            config["pipeline"]["restgen"]["negative_prompt"],
-            config["pipeline"]["restgen"]["steps"],
-            config["pipeline"]["restgen"]["cfg_scale"],
-            config["pipeline"]["restgen"]["denoising_strength"],
-            config["pipeline"]["restgen"]["seed"],
-            config["pipeline"]["restgen"]["callback_steps"],
-            controlnet_conditions_,
+    # Generate the remaining image (index [1, dataset_size))
+    for i in range(1, config["restgen"]["dataset_size"]):
+        restgen_loop(
+            [f"{i:04}.png", f"{i:04}.png", "0001.png"],
+            1,
+            [i - 1, i, 0],
+            unet9,
+            prompt,
+            prompt_additions,
+            config,
+            controlnet_conditions,
             controlnet_scales,
-            config["controlnet"]["guidance"]["start"],
-            config["controlnet"]["guidance"]["end"],
-            config["controlnet"]["soft_exp"],
-            downscaled,
-            mask,
-            config["pipeline"]["restgen"]["inpaint_method"],
         )
-        filename = f"{(i+1):04}.png"
-        filepath = os.path.join(path["ngp_train_folder"], filename)
-        process_results(image, seed, interim, filename)
-
-        subprocess.call(["python", "inference_realesrgan.py", filepath, filepath])

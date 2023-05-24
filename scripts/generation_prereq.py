@@ -4,8 +4,6 @@ import subprocess
 
 sys.path.append("..")
 
-import PIL.Image
-
 from src.utils.file_loader import *
 from src.utils.image_wrapper import *
 from src.workflows.controlnet_unet4_workflow import *
@@ -63,13 +61,13 @@ if __name__ == "__main__":
 
     # 1. Generate prereq image
     image, seed, interim = unet4(
-        config["pipeline"]["firstgen"]["prompt"].format(prompt_additions[0]),
-        config["pipeline"]["firstgen"]["negative_prompt"],
-        config["pipeline"]["firstgen"]["steps"],
-        config["pipeline"]["firstgen"]["cfg_scale"],
-        config["pipeline"]["firstgen"]["denoising_strength"],
-        config["pipeline"]["firstgen"]["seed"],
-        config["pipeline"]["firstgen"]["callback_steps"],
+        config["pipeline"]["prereq"]["prompt"].format(prompt_additions[0]),
+        config["pipeline"]["prereq"]["negative_prompt"],
+        config["pipeline"]["prereq"]["steps"],
+        config["pipeline"]["prereq"]["cfg_scale"],
+        config["pipeline"]["prereq"]["denoising_strength"],
+        config["pipeline"]["prereq"]["seed"],
+        config["pipeline"]["prereq"]["callback_steps"],
         controlnet_conditions[0],
         controlnet_scales,
         config["controlnet"]["guidance"]["start"],
@@ -80,7 +78,7 @@ if __name__ == "__main__":
     filepath = os.path.join(path["ngp_train_folder"], filename)
     process_results(image, seed, interim, filename)
 
-    # 2. Run inference on DeepDanbooru & load inferred prompt
+    # 2. Run inference on DeepDanbooru
     subprocess.call(
         [
             "python",
@@ -89,30 +87,6 @@ if __name__ == "__main__":
             path["dd_prompt_file"],
         ]
     )
-    prompt = fl.load_text(path["dd_prompt_file"])
 
     # 3. Upscale prereq image
-    subprocess.call(["python", "inference_realesrgan.py", filepath, filepath])
-
-    # 4. Downscale prereq image & generate first image
-    image, seed, interim = unet4(
-        prompt.format(prompt_additions[0]),
-        config["pipeline"]["firstgen"]["negative_prompt"],
-        config["pipeline"]["firstgen"]["steps"],
-        config["pipeline"]["firstgen"]["cfg_scale"],
-        config["pipeline"]["firstgen"]["img2img_denoising_strength"],
-        config["pipeline"]["firstgen"]["img2img_denoising_seed"],
-        config["pipeline"]["firstgen"]["callback_steps"],
-        controlnet_conditions[0],
-        controlnet_scales,
-        config["controlnet"]["guidance"]["start"],
-        config["controlnet"]["guidance"]["end"],
-        config["controlnet"]["soft_exp"],
-        image_wrapper(PIL.Image.open(filepath), "pil").scale(0.25).to_pil(),
-    )
-    filename = "0001.png"
-    filepath = os.path.join(path["ngp_train_folder"], filename)
-    process_results(image, seed, interim, filename)
-
-    # 5. Upscale first image
     subprocess.call(["python", "inference_realesrgan.py", filepath, filepath])

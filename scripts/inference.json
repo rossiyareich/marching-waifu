@@ -19,20 +19,18 @@
     },
     "deepdanbooru": {
         "threshold": 0.08,
-        "multiplier": 1.1,
-        "prefix": "(masterpiece, best quality, {0})++, "
+        "multiplier": 1.0,
+        "prefix": "(masterpiece, best quality, {0})+, "
     },
     "pipeline": {
-        "firstgen": {
+        "prereq": {
             "prompt": "(masterpiece, best quality, grey background, {0})+, 1girl, white hoodie, earmuffs, leggings, white scarf, black gloves, white socks, short blue hair, blue eyes, bangs",
             "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
             "steps": 20,
             "cfg_scale": 10,
             "callback_steps": 5,
             "denoising_strength": 1.0,
-            "seed": 13382126972200556239,
-            "img2img_denoising_strength": 0.58,
-            "img2img_denoising_seed": -1
+            "seed": 13382126972200556239
         },
         "restgen": {
             "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",

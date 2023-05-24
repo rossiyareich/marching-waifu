@@ -14,9 +14,9 @@ class realesrgan_pipeline:
     def __init__(
         self,
         outscale=4.0,
-        tile=0,
-        tile_pad=10,
-        pre_pad=0,
+        tile=192,
+        tile_pad=16,
+        pre_pad=16,
         face_enhance=True,
         fp32=False,
         gpu_id=0,
@@ -25,7 +25,9 @@ class realesrgan_pipeline:
 
         # x4 RRDBNet model with 6 blocks
         model_name = "RealESRGAN_x4plus_anime_6B"
-        model = RRDBNet(3, 3, 4, 64, 6, 32)
+        model = RRDBNet(
+            num_in_ch=3, num_out_ch=3, num_feat=64, num_block=6, num_grow_ch=32, scale=4
+        )
         netscale = 4
         file_url = [
             "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth"
@@ -37,24 +39,23 @@ class realesrgan_pipeline:
             ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
             for url in file_url:
                 model_path = load_file_from_url(
-                    url,
-                    os.path.join(ROOT_DIR, "weights"),
-                    True,
-                    None,
+                    url=url,
+                    model_dir=os.path.join(ROOT_DIR, "weights"),
+                    progress=True,
+                    file_name=None,
                 )
 
         # Restorer
         self.upsampler = RealESRGANer(
-            netscale,
-            model_path,
-            None,
-            model,
-            tile,
-            tile_pad,
-            pre_pad,
-            not fp32,
-            None,
-            gpu_id,
+            scale=netscale,
+            model_path=model_path,
+            dni_weight=None,
+            model=model,
+            tile=tile,
+            tile_pad=tile_pad,
+            pre_pad=pre_pad,
+            half=not fp32,
+            gpu_id=gpu_id,
         )
 
         # Use GFPGAN for face enhancement
@@ -63,26 +64,22 @@ class realesrgan_pipeline:
             from gfpgan import GFPGANer
 
             self.face_enhancer = GFPGANer(
-                "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth",
-                outscale,
-                "clean",
-                2,
-                self.upsampler,
-                None,
+                model_path="https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth",
+                upscale=outscale,
+                arch="clean",
+                channel_multiplier=2,
+                bg_upsampler=self.upsampler,
             )
 
     @torch.no_grad()
-    def __call__(self, source_img):
-        source_img = image_wrapper(PIL.Image.open(source_img), "pil").to_cv2()
+    def __call__(self, img):
+        img = image_wrapper(PIL.Image.open(img), "pil").to_cv2()
 
         if self.face_enhancer is not None:
             _, _, output = self.face_enhancer.enhance(
-                source_img,
-                False,
-                False,
-                True,
+                img, has_aligned=False, only_center_face=False, paste_back=True
             )
         else:
-            output, _ = self.upsampler.enhance(source_img, self.outscale)
+            output, _ = self.upsampler.enhance(img, outscale=self.outscale)
 
         return image_wrapper(output, "cv2").to_pil()
