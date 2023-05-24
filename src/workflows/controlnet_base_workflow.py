@@ -41,6 +41,13 @@ class controlnet_base_workflow:
                     filepath, token=pl.stem, use_safetensors=use_safetensors
                 )
 
+        self.compel = Compel(
+            self.pipe.tokenizer,
+            self.pipe.text_encoder,
+            truncate_long_prompts=False,
+            device="cuda:0",
+        )
+
         self.pipe.enable_xformers_memory_efficient_attention()
         self.pipe.enable_sequential_cpu_offload()
 
@@ -54,20 +61,9 @@ class controlnet_base_workflow:
         return seed
 
     def load_weighted_embeds(self, prompt, negative_prompt):
-        compel = Compel(
-            self.pipe.tokenizer,
-            self.pipe.text_encoder,
-            truncate_long_prompts=False,
-            device="cuda:0",
-        )
+        conditioning = self.compel.build_conditioning_tensor(prompt)
+        negative_conditioning = self.compel.build_conditioning_tensor(negative_prompt)
 
-        conditioning = compel.build_conditioning_tensor(prompt)
-        negative_conditioning = compel.build_conditioning_tensor(negative_prompt)
-
-        self.weighted_embeds = compel.pad_conditioning_tensors_to_same_length(
+        self.weighted_embeds = self.compel.pad_conditioning_tensors_to_same_length(
             [conditioning, negative_conditioning]
         )
-
-        del compel
-        gc.collect()
-        torch.cuda.empty_cache()

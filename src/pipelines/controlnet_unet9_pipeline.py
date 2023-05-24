@@ -114,6 +114,51 @@ class controlnet_unet9_pipeline(
 
         return self.device
 
+    def _zeros_tensor(
+        self,
+        shape: Union[Tuple, List],
+        generator: Optional[Union[List[torch.Generator], torch.Generator]] = None,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+        layout: Optional[torch.layout] = None,
+    ):
+        rand_device = device
+        batch_size = shape[0]
+
+        layout = layout or torch.strided
+        device = device or torch.device("cpu")
+
+        if generator is not None:
+            gen_device_type = (
+                generator.device.type
+                if not isinstance(generator, list)
+                else generator[0].device.type
+            )
+            if gen_device_type != device.type and gen_device_type == "cpu":
+                rand_device = "cpu"
+
+        if isinstance(generator, list):
+            shape = (1,) + shape[1:]
+            latents = [
+                torch.zeros(
+                    shape,
+                    device=rand_device,
+                    dtype=dtype,
+                    layout=layout,
+                )
+                for _ in range(batch_size)
+            ]
+            latents = torch.cat(latents, dim=0).to(device)
+        else:
+            latents = torch.zeros(
+                shape,
+                device=rand_device,
+                dtype=dtype,
+                layout=layout,
+            ).to(device)
+
+        return latents
+
     def _pil_to_tensors(self, image):
         if isinstance(image, PIL.Image.Image):
             image = [image]
@@ -246,51 +291,6 @@ class controlnet_unet9_pipeline(
 
         return timesteps, num_inference_steps - t_start
 
-    def _zeros_tensor(
-        self,
-        shape: Union[Tuple, List],
-        generator: Optional[Union[List[torch.Generator], torch.Generator]] = None,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
-        layout: Optional[torch.layout] = None,
-    ):
-        rand_device = device
-        batch_size = shape[0]
-
-        layout = layout or torch.strided
-        device = device or torch.device("cpu")
-
-        if generator is not None:
-            gen_device_type = (
-                generator.device.type
-                if not isinstance(generator, list)
-                else generator[0].device.type
-            )
-            if gen_device_type != device.type and gen_device_type == "cpu":
-                rand_device = "cpu"
-
-        if isinstance(generator, list):
-            shape = (1,) + shape[1:]
-            latents = [
-                torch.zeros(
-                    shape,
-                    device=rand_device,
-                    dtype=dtype,
-                    layout=layout,
-                )
-                for _ in range(batch_size)
-            ]
-            latents = torch.cat(latents, dim=0).to(device)
-        else:
-            latents = torch.zeros(
-                shape,
-                device=rand_device,
-                dtype=dtype,
-                layout=layout,
-            ).to(device)
-
-        return latents
-
     def _decode_latents(self, latents):
         latents = 1 / self.vae.config.scaling_factor * latents
         image = self.vae.decode(latents).sample
@@ -354,6 +354,7 @@ class controlnet_unet9_pipeline(
             return _get_noised_latents(
                 image,
                 lambda x: PIL.Image.new(
+                    "RGB",
                     (width, height),
                     tuple(
                         np.average(
@@ -452,7 +453,6 @@ class controlnet_unet9_pipeline(
             if do_classifier_free_guidance
             else masked_image_latents
         )
-
         masked_image_latents = masked_image_latents.to(device=device, dtype=dtype)
 
         return masked_image_latents
@@ -525,7 +525,9 @@ class controlnet_unet9_pipeline(
             negative_prompt_embeds,
         )
 
-        # 3. Prepare mask and controlnet_conditioning_image
+        # 3. Prepare mask, masked, and controlnet_conditioning_image
+        mask_image = self._pil_to_mask_tensors(mask_image)
+        masked_image = self._pil_to_tensors(image) * (mask_image < 0.5)
         if isinstance(self.controlnet, ControlNetModel):
             controlnet_conditioning_image = (
                 self._pil_to_controlnet_conditioning_tensors(
@@ -555,9 +557,6 @@ class controlnet_unet9_pipeline(
                 controlnet_conditioning_images.append(image_)
             controlnet_conditioning_image = controlnet_conditioning_images
 
-        mask_image = self._pil_to_mask_tensors(mask_image)
-        masked_image = self._pil_to_tensors(image.copy()) * (mask_image < 0.5)
-
         # 4. Prepare timesteps
         self.scheduler.set_timesteps(num_inference_steps, device=device)
         timesteps, num_inference_steps = self._get_timesteps(
@@ -580,7 +579,6 @@ class controlnet_unet9_pipeline(
             fill_mode,
             generator,
         )
-
         mask_image_latents = self._prepare_mask_latents(
             mask_image,
             batch_size * num_images_per_prompt,
@@ -590,7 +588,6 @@ class controlnet_unet9_pipeline(
             device,
             do_classifier_free_guidance,
         )
-
         masked_image_latents = self._prepare_masked_image_latents(
             masked_image,
             batch_size * num_images_per_prompt,
@@ -677,7 +674,9 @@ class controlnet_unet9_pipeline(
                 ):
                     progress_bar.update()
                     if callback is not None and i % callback_steps == 0:
-                        callback(i, t, self.numpy_to_pil(self._decode_latents(latents))[0])
+                        callback(
+                            i, t, self.numpy_to_pil(self._decode_latents(latents))[0]
+                        )
 
         if hasattr(self, "final_offload_hook") and self.final_offload_hook is not None:
             self.unet.to("cpu")
