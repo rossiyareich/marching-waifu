@@ -53,7 +53,10 @@ def restgen_loop(
 ):
     # Construct stitched image
     images = [
-        image_wrapper(PIL.Image.open(f), "pil").scale(0.25) for f in image_filename
+        image_wrapper(
+            PIL.Image.open(os.path.join(f, path["ngp_train_folder"])), "pil"
+        ).scale(0.25)
+        for f in image_filename
     ]
     for image in images[1:]:
         images[0].concatenate(image)
