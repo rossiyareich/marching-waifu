@@ -50,7 +50,7 @@ cd ~
 rm -rf Anaconda3-2023.03-1-Linux-x86_64.sh
 
 # Setup conda env
-eval "$(conda shell.bash hook)"
+eval "$(command conda 'shell.bash' 'hook' 2> /dev/null)"
 conda create -n marching-waifu python=3.10
 conda activate marching-waifu
 pip install --upgrade pip
