@@ -64,14 +64,14 @@ def restgen_loop(
 
     # Calculate crop area
     crop_area = (
-        mask_relindex * (image.width / len(images)),
+        mask_relindex * (images.width / len(images)),
         0,
-        (mask_relindex + 1) * (image.width / len(images)),
-        image.height,
+        (mask_relindex + 1) * (images.width / len(images)),
+        images.height,
     )
 
     # Construct mask image
-    mask = PIL.Image.new("1", (image.width, image.height))
+    mask = PIL.Image.new("1", (images.width, images.height))
     mask.paste(True, crop_area)
 
     # Construct ControlNet images
