@@ -74,7 +74,7 @@ if __name__ == "__main__":
         config["controlnet"]["guidance"]["end"],
         config["controlnet"]["soft_exp"],
     )
-    filename = "0001.png"
+    filename = "prereq.png"
     filepath = os.path.join(path["ngp_train_folder"], filename)
     process_results(image, seed, interim, filename)
 

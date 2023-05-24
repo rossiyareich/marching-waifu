@@ -146,7 +146,7 @@ if __name__ == "__main__":
 
     # Generate second image
     restgen_loop(
-        ["0001.png", "0001.png"],
+        ["prereq.png", "prereq.png"],
         1,
         [0, 1],
         unet9,
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     # Generate the remaining image (index [2, dataset_size))
     for i in range(2, config["pipeline"]["restgen"]["dataset_size"]):
         restgen_loop(
-            [f"{i:04}.png", f"{i:04}.png", "0001.png"],
+            [f"{i:04}.png", f"{i:04}.png", "prereq.png"],
             1,
             [i - 1, i, 0],
             unet9,
