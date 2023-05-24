@@ -24,7 +24,7 @@
     },
     "pipeline": {
         "prereq": {
-            "prompt": "(masterpiece, best quality, grey background, {0})+, 1girl, white hoodie, earmuffs, leggings, white scarf, black gloves, white socks, short blue hair, blue eyes, bangs",
+            "prompt": "(masterpiece, best quality, {0})+, 1girl, white hoodie, earmuffs, leggings, white scarf, black gloves, white socks, short blue hair, blue eyes, bangs",
             "negative_prompt": "EasyNegative, (worst quality, low quality, logo, text, watermark, username, nsfw), inaccurate hands and fingers",
             "steps": 20,
             "cfg_scale": 10,
@@ -37,9 +37,9 @@
             "steps": 20,
             "cfg_scale": 10,
             "callback_steps": 0,
-            "denoising_strength": 1.0,
+            "denoising_strength": 0.9,
             "seed": -1,
-            "inpaint_method": "original",
+            "inpaint_method": "latent_rand",
             "dataset_size": 40
         }
     }
