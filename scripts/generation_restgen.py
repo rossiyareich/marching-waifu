@@ -88,8 +88,10 @@ if __name__ == "__main__":
         image_wrapper(controlnet_condition_.copy(), "pil")
         for controlnet_condition_ in controlnet_conditions[0]
     ]
-    for k, controlnet_condition_ in enumerate(controlnet_conditions_[1]):
-        controlnet_conditions_[k].concatenate(controlnet_condition_)
+    for k, controlnet_condition_ in enumerate(controlnet_conditions[1]):
+        controlnet_conditions_[k].concatenate(
+            image_wrapper(controlnet_condition_, "pil")
+        )
 
     image, seed, interim = unet9(
         prompt.format(prompt_additions[1]),
@@ -134,8 +136,10 @@ if __name__ == "__main__":
             for controlnet_condition_ in controlnet_conditions[i - 1]
         ]
         for j in [i, 0]:
-            for k, controlnet_condition_ in enumerate(controlnet_conditions_[j]):
-                controlnet_conditions_[k].concatenate(controlnet_condition_)
+            for k, controlnet_condition_ in enumerate(controlnet_conditions[j]):
+                controlnet_conditions_[k].concatenate(
+                    image_wrapper(controlnet_condition_, "pil")
+                )
 
         image, seed, interim = unet9(
             prompt.format(prompt_additions[i]),
