@@ -92,6 +92,10 @@ if __name__ == "__main__":
         controlnet_conditions_[k].concatenate(
             image_wrapper(controlnet_condition_, "pil")
         )
+    controlnet_conditions_ = [
+        controlnet_condition_.to_pil()
+        for controlnet_condition_ in controlnet_conditions_
+    ]
 
     image, seed, interim = unet9(
         prompt.format(prompt_additions[1]),
@@ -140,6 +144,10 @@ if __name__ == "__main__":
                 controlnet_conditions_[k].concatenate(
                     image_wrapper(controlnet_condition_, "pil")
                 )
+        controlnet_conditions_ = [
+            controlnet_condition_.to_pil()
+            for controlnet_condition_ in controlnet_conditions_
+        ]
 
         image, seed, interim = unet9(
             prompt.format(prompt_additions[i]),
