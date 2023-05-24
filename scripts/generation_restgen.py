@@ -144,19 +144,6 @@ if __name__ == "__main__":
         path["textual_inversion_folder"],
     )
 
-    # Generate mirror of first image
-    restgen_loop(
-        ["prereq.png", "prereq.png"],
-        1,
-        [0, 0],
-        unet9,
-        prompt,
-        prompt_additions,
-        config,
-        controlnet_conditions,
-        controlnet_scales,
-    )
-
     # Generate second image
     restgen_loop(
         ["0001.png", "0001.png"],
@@ -170,7 +157,7 @@ if __name__ == "__main__":
         controlnet_scales,
     )
 
-    # Generate the remaining image (index [1, dataset_size))
+    # Generate the remaining image (index [2, dataset_size))
     for i in range(2, config["pipeline"]["restgen"]["dataset_size"]):
         restgen_loop(
             [f"{i:04}.png", f"{i:04}.png", "0001.png"],
