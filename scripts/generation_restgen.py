@@ -64,10 +64,10 @@ def restgen_loop(
 
     # Calculate crop area
     crop_area = (
-        mask_relindex * (images.width / len(image_filename)),
+        mask_relindex * int(images.width / len(image_filename)),
         0,
-        (mask_relindex + 1) * (images.width / len(image_filename)),
-        images.height,
+        (mask_relindex + 1) * int(images.width / len(image_filename)),
+        int(images.height),
     )
 
     # Construct mask image
