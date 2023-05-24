@@ -171,7 +171,7 @@ if __name__ == "__main__":
     )
 
     # Generate the remaining image (index [1, dataset_size))
-    for i in range(1, config["pipeline"]["restgen"]["dataset_size"]):
+    for i in range(2, config["pipeline"]["restgen"]["dataset_size"]):
         restgen_loop(
             [f"{i:04}.png", f"{i:04}.png", "0001.png"],
             1,
