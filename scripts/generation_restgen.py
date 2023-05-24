@@ -84,6 +84,13 @@ if __name__ == "__main__":
 
     mask = generate_mask(downscaled.width, downscaled.height, 2, 1)
 
+    controlnet_conditions_ = [
+        image_wrapper(controlnet_condition_.copy(), "pil")
+        for controlnet_condition_ in controlnet_conditions[0:2]
+    ]
+    for k, controlnet_condition_ in enumerate(controlnet_conditions_[1]):
+        controlnet_conditions_[k].concatenate(controlnet_condition_)
+
     image, seed, interim = unet9(
         prompt.format(prompt_additions[1]),
         config["pipeline"]["restgen"]["negative_prompt"],
@@ -92,7 +99,7 @@ if __name__ == "__main__":
         config["pipeline"]["restgen"]["denoising_strength"],
         config["pipeline"]["restgen"]["seed"],
         config["pipeline"]["restgen"]["callback_steps"],
-        controlnet_conditions[1],
+        controlnet_conditions_,
         controlnet_scales,
         config["controlnet"]["guidance"]["start"],
         config["controlnet"]["guidance"]["end"],
@@ -123,7 +130,7 @@ if __name__ == "__main__":
         mask = generate_mask(downscaled.width, downscaled.height, 3, 1)
 
         controlnet_conditions_ = [
-            image_wrapper(controlnet_condition_, "pil")
+            image_wrapper(controlnet_condition_.copy(), "pil")
             for controlnet_condition_ in controlnet_conditions[i - 1]
         ]
         for j in [i, 0]:
