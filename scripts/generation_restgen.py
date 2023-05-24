@@ -92,7 +92,7 @@ def restgen_loop(
 
     # Generate, crop, save new image
     image, seed, interim = unet9(
-        prompt.format(prompt_additions[absolute]),
+        config["pipeline"]["prereq"]["prompt"].format(prompt_additions[absolute]),
         config["pipeline"]["restgen"]["negative_prompt"],
         config["pipeline"]["restgen"]["steps"],
         config["pipeline"]["restgen"]["cfg_scale"],
