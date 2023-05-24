@@ -49,7 +49,8 @@ class controlnet_base_workflow:
         )
 
         self.pipe.enable_xformers_memory_efficient_attention()
-        self.pipe.enable_sequential_cpu_offload()
+        self.pipe.enable_model_cpu_offload()
+        # self.pipe.enable_sequential_cpu_offload()
 
     def load_generator(self, seed):
         self.generator = torch.Generator("cpu")
