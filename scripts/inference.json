@@ -37,9 +37,9 @@
             "steps": 20,
             "cfg_scale": 10,
             "callback_steps": 0,
-            "denoising_strength": 0.9,
+            "denoising_strength": 1.0,
             "seed": -1,
-            "inpaint_method": "latent_rand",
+            "inpaint_method": "original",
             "dataset_size": 40
         }
     }
