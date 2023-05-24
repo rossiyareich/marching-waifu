@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     controlnet_conditions_ = [
         image_wrapper(controlnet_condition_.copy(), "pil")
-        for controlnet_condition_ in controlnet_conditions[0:2]
+        for controlnet_condition_ in controlnet_conditions[0]
     ]
     for k, controlnet_condition_ in enumerate(controlnet_conditions_[1]):
         controlnet_conditions_[k].concatenate(controlnet_condition_)
