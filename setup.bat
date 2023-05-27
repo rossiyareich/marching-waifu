@@ -1,5 +1,6 @@
 :: -----------------------------------------------------
-:: Make sure anaconda is installed and conda env is up!
+:: Make sure anaconda is installed and 
+:: conda env is up! (python=3.10)
 :: -----------------------------------------------------
 :: Make sure to have the following installed:
 ::  VS2022 build tools + CMake
@@ -11,12 +12,8 @@
 :: Update submodules
 git submodule update --init --recursive
 
-:: Setup conda env
-conda create -n marching-waifu python=3.10
-call activate marching-waifu
-pip install --upgrade pip
-
 :: Install 3rd party packages
+python -m pip install --upgrade pip
 pip install gdown ipykernel ipywidgets
 
 :: Install Tensorflow, Keras
@@ -29,13 +26,13 @@ pip install keras
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 :: Download pretrained DeepDanbooru weights
-mkdir ext/weights/
-cd ext/weights/
-powershell -Command "Invoke-WebRequest https://github.com/KichangKim/DeepDanbooru/releases/download/v3-20211112-sgd-e28/deepdanbooru-v3-20211112-sgd-e28.zip -OutFile deepdanbooru-v3-20211112-sgd-e28.zip"
-powershell -Command "Expand-Archive -Force deepdanbooru-v3-20211112-sgd-e28.zip ../AnimeFaceNotebooks/deepdanbooru_model"
-cd ../
-rm -rf weights
-cd ../
+mkdir "ext/weights/"
+cd "ext/weights/"
+powershell -Command "& Invoke-WebRequest https://github.com/KichangKim/DeepDanbooru/releases/download/v3-20211112-sgd-e28/deepdanbooru-v3-20211112-sgd-e28.zip -OutFile deepdanbooru-v3-20211112-sgd-e28.zip"
+powershell -Command "& Expand-Archive -Force deepdanbooru-v3-20211112-sgd-e28.zip ../AnimeFaceNotebooks/deepdanbooru_model"
+cd ..
+powershell -Command "& rm -Recurse weights"
+cd ..
 
 :: Build instant-ngp
 :: ... (TODO)
